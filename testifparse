@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program {
+    static unicorn {
+        if (__a) {
+        } else {
+        }
+    }
+}

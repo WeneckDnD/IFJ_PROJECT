@@ -1,0 +1,24 @@
+import "ifj25" for Ifj
+class Program {
+    static getAnswer(val) {
+        return val + 42
+    }
+
+    static main() {
+        var x
+        var y
+        var value
+        var str
+        x = 5.2
+        y = 1
+        value = x + y
+        str = Ifj.str(value)
+        x = Ifj.write(str)
+        var returnVal
+        returnVal = getAnswer(5)
+        var returnValStr
+        returnValStr = Ifj.str(returnVal)
+        x = Ifj.write("\n")
+        x = Ifj.write(returnValStr)
+    }
+}

@@ -1,0 +1,39 @@
+[DEBUG generate_function_declaration] Called, node->children_count = 2
+[DEBUG] code block found in grandchild
+[DEBUG generate_function_declaration] Found code_block, generating...
+[DEBUG generate_return] Called, node->children_count = 1
+[DEBUG generate_return] node->rule = 28, node->type = 1
+[DEBUG generate_return] node->token->token_lexeme = GR_RETURN
+[DEBUG generate_return] Checking child[0]: type=16, nonterm_type=1229562448, rule=31
+[DEBUG generate_return]   child[0]->token->token_lexeme = "hello getter", token_type = 2
+[DEBUG generate_return] Found expression node (by token type)
+[DEBUG generate_return] expr_node found, generating expression...
+[DEBUG generate_return] Generating terminal (by token type)
+[DEBUG generate_return] is_called = 0, expr_node = 0x58ed4949b040
+[DEBUG generate_return] Emitting POPFRAME and RETURN
+[DEBUG generate_function_declaration] Code block generation finished
+[DEBUG generate_function_declaration] Skipping implicit return (explicit return already generated)
+[DEBUG generate_function_declaration] Called, node->children_count = 2
+[DEBUG] code block found in grandchild
+[DEBUG generate_function_declaration] Found code_block, generating...
+[DEBUG generate_terminal] Looking for identifier: val
+[DEBUG generate_terminal] search_table result: 0x58ed49498b70
+[DEBUG generate_terminal] sym->sym_identif_type = 4
+[DEBUG generate_terminal] Trying to find getter with prefix...
+[DEBUG generate_terminal] getter_sym = (nil)
+[DEBUG generate_terminal] sym found, type=4, is_getter=0
+[DEBUG generate_terminal] Pushing local variable
+[DEBUG generate_function_declaration] Code block generation finished
+[DEBUG generate_function_declaration] Generating implicit return (no explicit return found)
+[DEBUG generate_function_declaration] Called, node->children_count = 2
+[DEBUG] code block found
+[DEBUG generate_function_declaration] Found code_block, generating...
+[DEBUG generate_terminal] Looking for identifier: getter
+[DEBUG generate_terminal] search_table result: 0x58ed4949a0e0
+[DEBUG generate_terminal] sym->sym_identif_type = 4
+[DEBUG generate_terminal] Trying to find getter with prefix...
+[DEBUG generate_terminal] getter_sym = 0x58ed4949ac90
+[DEBUG generate_terminal] Found getter!
+[DEBUG generate_terminal] sym found, type=3, is_getter=1
+[DEBUG generate_terminal] Calling getter function
+[DEBUG generate_function_declaration] Code block generation finished

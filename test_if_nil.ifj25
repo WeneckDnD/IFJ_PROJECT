@@ -1,0 +1,31 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        // __a is used but not explicitly initialized here. 
+        // Assuming it defaults to nil if not set.
+        var d
+        if (__a) {
+            d = Ifj.write("True branch (Error)\n")
+        } else {
+            d = Ifj.write("False branch (Correct)\n")
+        }
+        
+        if (null) {
+             d = Ifj.write("Null is true (Error)\n")
+        } else {
+             d = Ifj.write("Null is false (Correct)\n")
+        }
+
+        if (false) {
+             d = Ifj.write("False is true (Error)\n")
+        } else {
+             d = Ifj.write("False is false (Correct)\n")
+        }
+        
+        if (true) {
+             d = Ifj.write("True is true (Correct)\n")
+        } else {
+             d = Ifj.write("True is false (Error)\n")
+        }
+    }
+}

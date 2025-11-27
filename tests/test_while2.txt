@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        while (1 == 2) {
+            __d = Ifj.write("test\n")
+            return null
+        }
+    }
+}

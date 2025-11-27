@@ -1,0 +1,35 @@
+import "ifj25" for Ifj
+class Program {
+    
+    static unicorn {
+
+        b = a
+
+        if (a+b+c+k) {
+        } else {
+
+        }
+
+    } 
+    
+    static main(a,b,c) {
+        var myValue         
+                           
+        var valueFromUser
+        valueFromUser = Ifj.read_num()
+    }
+
+    while (a) {
+
+        if(__a){
+
+        }else{
+
+        }
+
+        x = l
+    }
+
+    var x
+
+}

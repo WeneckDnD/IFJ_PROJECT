@@ -1,0 +1,58 @@
+.IFJcode25
+JUMP main
+LABEL getAnswer
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@val
+POPS LF@val
+PUSHS LF@val
+PUSHS float@0x1.5p+5
+ADDS
+POPFRAME
+RETURN
+LABEL main
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@x
+DEFVAR LF@y
+DEFVAR LF@value
+DEFVAR LF@str
+PUSHS float@0x1.4cccccccccccdp+2
+POPS LF@x
+PUSHS float@0x1p+0
+POPS LF@y
+PUSHS LF@x
+PUSHS LF@y
+ADDS
+POPS LF@value
+PUSHS LF@value
+FLOAT2STRS
+POPS LF@str
+PUSHS LF@str
+DEFVAR LF@tmp_0
+POPS LF@tmp_0
+WRITE LF@tmp_0
+PUSHS nil@nil
+POPS LF@x
+DEFVAR LF@returnVal
+PUSHS float@0x1.4p+2
+else block
+CALL getAnswer
+POPS LF@returnVal
+DEFVAR LF@returnValStr
+PUSHS LF@returnVal
+FLOAT2STRS
+POPS LF@returnValStr
+PUSHS string@\010
+DEFVAR LF@tmp_1
+POPS LF@tmp_1
+WRITE LF@tmp_1
+PUSHS nil@nil
+POPS LF@x
+PUSHS LF@returnValStr
+DEFVAR LF@tmp_2
+POPS LF@tmp_2
+WRITE LF@tmp_2
+PUSHS nil@nil
+POPS LF@x
+POPFRAME

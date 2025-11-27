@@ -1,0 +1,325 @@
+.IFJcode25
+JUMP main
+LABEL getAnswer$0
+CREATEFRAME
+PUSHFRAME
+PUSHS float@0x1.5p+5
+POPFRAME
+RETURN
+LABEL getAnswer$1
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+POPS LF@arg
+PUSHS LF@arg
+ISINTS
+PUSHS bool@false
+JUMPIFEQS LABEL_0
+PUSHS LF@arg
+PUSHS float@0x1p+0
+SUBS
+PUSHS float@0x1p+5
+PUSHS float@0x1.5066666666666p+6
+MULS
+PUSHS float@0x1.3333333333333p+1
+DIVS
+GTS
+PUSHS bool@false
+JUMPIFEQS LABEL_2
+PUSHS string@Celkem\032velke\032cislo!\010
+DEFVAR LF@tmp_0
+POPS LF@tmp_0
+WRITE LF@tmp_0
+PUSHS nil@nil
+POPS GF@__d
+JUMP LABEL_3
+LABEL LABEL_2
+LABEL LABEL_3
+DEFVAR LF@ansStr
+PUSHS LF@arg
+FLOAT2STRS
+POPS LF@ansStr
+PUSHS string@Odpoved\032je\032
+PUSHS LF@ansStr
+ADDS
+POPFRAME
+RETURN
+JUMP LABEL_1
+LABEL LABEL_0
+PUSHS string@Neplatny\032argument\010
+DEFVAR LF@tmp_1
+POPS LF@tmp_1
+WRITE LF@tmp_1
+PUSHS nil@nil
+POPS GF@__d
+PUSHS nil@nil
+POPFRAME
+RETURN
+LABEL LABEL_1
+LABEL unicorn_
+CREATEFRAME
+PUSHFRAME
+PUSHS GF@__a
+PUSHS bool@false
+JUMPIFEQS LABEL_4
+PUSHS GF@__a
+PUSHS float@0x1.4p+3
+ADDS
+POPFRAME
+RETURN
+JUMP LABEL_5
+LABEL LABEL_4
+PUSHS nil@nil
+POPFRAME
+RETURN
+LABEL LABEL_5
+LABEL unicorn__
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@val
+POPS LF@val
+PUSHS string@Jsem\032jednorozci\032setter,\032ziskal\032jsem\032
+DEFVAR LF@tmp_2
+POPS LF@tmp_2
+WRITE LF@tmp_2
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@val
+DEFVAR LF@tmp_3
+POPS LF@tmp_3
+WRITE LF@tmp_3
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_4
+POPS LF@tmp_4
+WRITE LF@tmp_4
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@val
+POPS GF@__a
+PUSHS nil@nil
+POPFRAME
+RETURN
+LABEL unicorn
+CREATEFRAME
+PUSHFRAME
+PUSHS string@Jsem\032ve\032funkci\032unicorn,\032ne\032v\032getteru\010
+DEFVAR LF@tmp_5
+POPS LF@tmp_5
+WRITE LF@tmp_5
+PUSHS nil@nil
+POPS GF@__d
+PUSHS nil@nil
+POPFRAME
+RETURN
+LABEL main
+CREATEFRAME
+PUSHFRAME
+DEFVAR GF@__d
+PUSHS nil@nil
+POPS GF@__d
+DEFVAR GF@__a
+PUSHS nil@nil
+POPS GF@__a
+CALL unicorn_
+DEFVAR LF@tmp_6
+POPS LF@tmp_6
+WRITE LF@tmp_6
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_7
+POPS LF@tmp_7
+WRITE LF@tmp_7
+PUSHS nil@nil
+POPS GF@__d
+PUSHS float@0x1.4p+2
+CALL unicorn__
+DEFVAR LF@myValue
+CALL unicorn_
+POPS LF@myValue
+PUSHS LF@myValue
+DEFVAR LF@tmp_8
+POPS LF@tmp_8
+WRITE LF@tmp_8
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_9
+POPS LF@tmp_9
+WRITE LF@tmp_9
+PUSHS nil@nil
+POPS GF@__d
+CALL unicorn
+POPS LF@myValue
+PUSHS LF@myValue
+DEFVAR LF@tmp_10
+POPS LF@tmp_10
+WRITE LF@tmp_10
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_11
+POPS LF@tmp_11
+WRITE LF@tmp_11
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@Napis\032cislo:\010
+DEFVAR LF@tmp_12
+POPS LF@tmp_12
+WRITE LF@tmp_12
+PUSHS nil@nil
+POPS GF@__d
+DEFVAR LF@valueFromUser
+DEFVAR LF@tmp_13
+READ LF@tmp_13 float
+PUSHS LF@tmp_13
+POPS LF@valueFromUser
+PUSHS LF@valueFromUser
+CALL getAnswer$1
+POPS LF@myValue
+PUSHS LF@myValue
+PUSHS nil@nil
+EQS
+PUSHS bool@false
+JUMPIFEQS LABEL_6
+PUSHS string@ODPOVED\032NENI!\010
+DEFVAR LF@tmp_14
+POPS LF@tmp_14
+WRITE LF@tmp_14
+PUSHS nil@nil
+POPS GF@__d
+PUSHS nil@nil
+POPFRAME
+RETURN
+JUMP LABEL_7
+LABEL LABEL_6
+PUSHS LF@myValue
+TYPES
+EQS
+PUSHS bool@false
+JUMPIFEQS LABEL_8
+JUMP LABEL_9
+LABEL LABEL_8
+LABEL LABEL_9
+LABEL LABEL_7
+PUSHS LF@myValue
+DEFVAR LF@tmp_15
+POPS LF@tmp_15
+WRITE LF@tmp_15
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_16
+POPS LF@tmp_16
+WRITE LF@tmp_16
+PUSHS nil@nil
+POPS GF@__d
+LABEL LABEL_10
+PUSHS LF@valueFromUser
+PUSHS float@0x0p+0
+PUSHS float@0x1p+1
+SUBS
+GTS
+PUSHS bool@false
+JUMPIFEQS LABEL_11
+PUSHS string@Jedeme\032dolu!\032
+DEFVAR LF@tmp_17
+POPS LF@tmp_17
+WRITE LF@tmp_17
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@valueFromUser
+DEFVAR LF@tmp_18
+POPS LF@tmp_18
+WRITE LF@tmp_18
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\032->\032
+DEFVAR LF@tmp_19
+POPS LF@tmp_19
+WRITE LF@tmp_19
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@valueFromUser
+PUSHS float@0x1p+0
+SUBS
+POPS LF@valueFromUser
+DEFVAR LF@valStr
+PUSHS LF@valueFromUser
+FLOAT2STRS
+POPS LF@valStr
+PUSHS LF@valStr
+DEFVAR LF@tmp_20
+POPS LF@tmp_20
+WRITE LF@tmp_20
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_21
+POPS LF@tmp_21
+WRITE LF@tmp_21
+PUSHS nil@nil
+POPS GF@__d
+JUMP LABEL_10
+LABEL LABEL_11
+DEFVAR LF@x
+PUSHS float@0x1p+0
+POPS LF@x
+DEFVAR LF@x
+PUSHS string@cervena\032panda\032+\032
+POPS LF@x
+PUSHS string@(
+DEFVAR LF@tmp_22
+POPS LF@tmp_22
+WRITE LF@tmp_22
+PUSHS nil@nil
+POPS GF@__d
+PUSHS float@0x1p+0
+PUSHS float@0x1p+0
+EQS
+PUSHS bool@false
+JUMPIFEQS LABEL_12
+DEFVAR LF@y
+PUSHS LF@x
+PUSHS float@0x1.8p+1
+MULS
+POPS LF@y
+DEFVAR LF@x
+PUSHS LF@y
+POPS LF@x
+PUSHS LF@x
+DEFVAR LF@tmp_23
+POPS LF@tmp_23
+WRITE LF@tmp_23
+PUSHS nil@nil
+POPS GF@__d
+JUMP LABEL_13
+LABEL LABEL_12
+LABEL LABEL_13
+PUSHS string@konec)\032
+DEFVAR LF@tmp_24
+POPS LF@tmp_24
+WRITE LF@tmp_24
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@x
+DEFVAR LF@tmp_25
+POPS LF@tmp_25
+WRITE LF@tmp_25
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@x
+DEFVAR LF@tmp_26
+POPS LF@tmp_26
+WRITE LF@tmp_26
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@tmp_27
+POPS LF@tmp_27
+WRITE LF@tmp_27
+PUSHS nil@nil
+POPS GF@__d
+POPFRAME
