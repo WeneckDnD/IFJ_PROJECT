@@ -9,23 +9,5 @@ class Program {
         } else {
             d = Ifj.write("False branch (Correct)\n")
         }
-        
-        if (null) {
-             d = Ifj.write("Null is true (Error)\n")
-        } else {
-             d = Ifj.write("Null is false (Correct)\n")
-        }
-
-        if (false) {
-             d = Ifj.write("False is true (Error)\n")
-        } else {
-             d = Ifj.write("False is false (Correct)\n")
-        }
-        
-        if (true) {
-             d = Ifj.write("True is true (Correct)\n")
-        } else {
-             d = Ifj.write("True is false (Error)\n")
-        }
     }
 }

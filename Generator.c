@@ -94,7 +94,6 @@ char **generate_global_vars(Generator *generator) {
               }
               global_vars = temp;
             }
-            // fprintf(stdout, "%s\n", sym->sym_lexeme);
             global_vars[count++] = sym->sym_lexeme;
         }
       }
@@ -123,20 +122,17 @@ void generator_free(Generator *generator) {
   }
 }
 
-// Generovanie jedinečného labelu TU NAJSKO INY LABLE A NIE ZE LABLE_XY ---
-// CHECK ---
+// Generovanie jedinečného labelu ---
 char *get_next_label(Generator *generator) {
   char *label = malloc(32);
   if (!label) {
     generator->error = ERR_T_MALLOC_ERR;
     return NULL;
   }
-  sprintf(label, "LABEL_%d", generator->label_counter++); // OPRAVIT
+  sprintf(label, "LABEL_%d", generator->label_counter++); 
   return label;
 }
 
-// Generovanie dočasnej premennej - používa TF@ (Temporary Frame) podľa
-// špecifikácie
 char *get_temp_var(Generator *generator) {
   char *temp = malloc(32);
   if (!temp) {
@@ -162,26 +158,6 @@ void generator_emit(Generator *generator, const char *format, ...) {
 
   fprintf(out, "\n");
 }
-
-// Emitovanie inštrukcie s operandom - pouzit pri ADD bez s teda ADDS, zatial
-// zalomentvane a nepouzite --- CHECK --- void
-// generator_emit_instruction(Generator *generator, const char *opcode, ...) {
-//     FILE *out = generator->output ? generator->output : stdout;
-
-//     fprintf(out, "%s", opcode);
-
-//     va_list args;
-//     va_start(args, opcode);
-
-//     const char *arg = va_arg(args, const char *);
-//     while (arg != NULL) {
-//         fprintf(out, " %s", arg);
-//         arg = va_arg(args, const char *);
-//     }
-
-//     va_end(args);
-//     fprintf(out, "\n");
-// }
 
 // Pomocná funkcia: kontrola či je číslo celé číslo (int) --- OKEY ---
 static int is_integer(const char *num_str) {
@@ -362,9 +338,6 @@ const char *get_operator_instruction(const char *operator) {
     return "MULS";
   if (strcmp(operator, "/") == 0)
     return "DIVS";
-  // IDIVS by sa malo použiť pre celočíselné delenie (int / int), --- CHECK ---
-  // ale v AST nie je v čase generovania informácia o type operandov.
-  // Pre teraz používame DIVS pre všetky delenia.
   if (strcmp(operator, "==") == 0)
     return "EQS";
   if (strcmp(operator, "!=") == 0)
@@ -433,13 +406,6 @@ void generate_strcmp_comparison(Generator *generator, tree_node_t *node) {
   for (int i = 0; i < node->children_count; i++) {
     tree_node_t *child = node->children[i];
     // Skip function name node (usually first child, but check pointer or type)
-    // In generate_function_call, func_name_node is identified. Here we don't have it easily.
-    // But usually children are: func_name, (, arg1, ,, arg2, )
-    // Or just args if parsed differently.
-    // Let's look at how other built-ins handle it.
-    // They check `if (child == func_name_node)` but we don't have `func_name_node`.
-    // However, `func_name_node` is usually `node->children[0]`.
-    // Let's check if child is terminal and skip tokens like (, ), Ifj.
     
     if (child->type == NODE_T_TERMINAL)
         continue;
@@ -516,7 +482,6 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
   if (!node || !node->token) {
     return;
   }
-  //   puts("terminal");
   Token *token = node->token;
 
   switch (token->token_type) {
@@ -609,34 +574,26 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
   case TOKEN_T_IDENTIFIER:
   case TOKEN_T_GLOBAL_VAR: {
     // Vyhľadanie symbolu v symbolovej tabuľke
-    // fprintf(stderr, "[DEBUG generate_terminal] Looking for identifier: %s\n", token->token_lexeme);
     Symbol *sym = search_table(
         token, generator->symtable); // --- CHECK --- preco to je dole
     
-    // fprintf(stderr, "[DEBUG generate_terminal] search_table result: %p\n", sym);
     if (sym) {
-      // fprintf(stderr, "[DEBUG generate_terminal] sym->sym_identif_type = %d\n", sym->sym_identif_type);
     }
     
     // Ak sa nenašiel symbol alebo to nie je lokálna premenná/parameter, skúsime nájsť getter
     int is_getter = 0;
     if (!sym || (sym->sym_identif_type != IDENTIF_T_VARIABLE && sym->sym_identif_type != IDENTIF_T_FUNCTION)) {
-        // fprintf(stderr, "[DEBUG generate_terminal] Trying to find getter with prefix...\n");
         // Skúsiť nájsť getter s prefixom "getter+" pomocou helper funkcie
         Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
-        // fprintf(stderr, "[DEBUG generate_terminal] getter_sym = %p\n", getter_sym);
         if (getter_sym) {
             sym = getter_sym;
             is_getter = 1;
-            // fprintf(stderr, "[DEBUG generate_terminal] Found getter!\n");
         }
     }
 
     if (sym) {
-      // fprintf(stderr, "[DEBUG generate_terminal] sym found, type=%d, is_getter=%d\n", sym->sym_identif_type, is_getter);
       // Ak je to getter, volať ho ako funkciu bez parametrov
       if (sym->sym_identif_type == IDENTIF_T_GETTER || is_getter) {
-        // fprintf(stderr, "[DEBUG generate_terminal] Calling getter function\n");
         generator->is_called = true;
         // Pre getter voláme funkciu s pôvodným názvom (bez prefixu ak sme ho našli cez prefix)
         // Alebo s názvom funkcie, ktorý sa vygeneroval (treba skontrolovať ako sa generujú labely pre gettery)
@@ -645,16 +602,12 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
         generator->is_called = false;  // Reset after call
 
       } else if (sym->is_global) { // co je is_global a kde to je definovane
-        // fprintf(stderr, "[DEBUG generate_terminal] Pushing global variable\n");
         generator_emit(generator, "PUSHS GF@%s", token->token_lexeme);
       } else {
-        // fprintf(stderr, "[DEBUG generate_terminal] Pushing local variable\n");
         generator_emit(generator, "PUSHS LF@%s", token->token_lexeme);
       }
     } else { // ---- DOUBLE CHECK ---- podla zadania skontrolovat ci ak sa
              // nenajde symbol ma to byt GF alebo LF
-             //   puts("2");
-      // fprintf(stderr, "[DEBUG generate_terminal] Symbol not found, defaulting to local variable\n");
       generator_emit(generator, "PUSHS LF@%s", token->token_lexeme);
     }
     break;
@@ -804,14 +757,6 @@ int generator_start(Generator *generator, tree_node_t *tree) {
   return generator->error;
 }
 
-// Forward deklarácie
-// void generate_getter_declaration(Generator *generator,
-//                                  tree_node_t *node); // --- CHECK --- co to
-//                                  je
-// void generate_setter_declaration(Generator *generator,
-//                                  tree_node_t *node); // --- CHECK --- co to
-//                                  je
-
 // Hlavná funkcia pre generovanie - rozdeľuje podľa typu uzla
 void generator_generate(Generator *generator, tree_node_t *node) {
   if (!generator || !node) {
@@ -823,7 +768,6 @@ void generator_generate(Generator *generator, tree_node_t *node) {
     return;
   }
 
-  // fprintf(stderr, "-idem ->nonterm_type: %d	\n", node->nonterm_type); //
   // DELETE Rozdelenie podľa typu neterminalov
   switch (node->nonterm_type) {
   case NONTERMINAL_T_CODE_BLOCK:
@@ -839,7 +783,6 @@ void generator_generate(Generator *generator, tree_node_t *node) {
     generate_expression(generator, node);
     break;
   case NONTERMINAL_T_EXPRESSION_OR_FN:
-    // puts("EXPRESSION_OR_FN");
     // Expression_or_function môže byť výraz alebo volanie funkcie
     // Rekurzívne spracovať deti - môže obsahovať FUN_CALL alebo EXPRESSION
     for (int i = 0; i < node->children_count; i++) {
@@ -847,30 +790,18 @@ void generator_generate(Generator *generator, tree_node_t *node) {
     }
     break;
   case NONTERMINAL_T_ASSIGNMENT:
-    // puts("ASSIGNMENT");
     generate_assignment(generator, node);
     break;
   case NONTERMINAL_T_DECLARATION:
     // Deklarácia môže byť premenná alebo funkcia - rozlíšiť podľa grammar rule
-    // -- CHECK --
     if (node->rule == GR_FUN_DECLARATION) { // funkcia ?
-      //   if (node->children_count >= 2 &&
-      //       node->children[1]->rule == GR_GETTER_DECLARATION) {
-      //     generate_getter_declaration(generator, node);
-      //   } else if (node->children_count >= 2 &&
-      //              node->children[1]->rule == GR_SETTER_DECLARATION) {
-      //     generate_setter_declaration(generator, node);
-      //   } else {
       generate_function_declaration(generator, node);
-      //   }
 
     } else {
-      //   puts("jjj");
       generate_declaration(generator, node);
     }
     break;
   case NONTERMINAL_T_FUN_CALL:
-    // puts("FUN_CALL");
     generate_function_call(generator, node);
     break;
   case NONTERMINAL_T_IF:
@@ -888,16 +819,13 @@ void generator_generate(Generator *generator, tree_node_t *node) {
     break;
   default:
     // Pre ostatné typy - rekurzívne spracovanie ostatnych
-    // fprintf(stdout, "---nonterm_type: %d	\n", node->children_count); //
-    // DELETE
     for (int i = 0; i < node->children_count; i++) {
       generator_generate(generator, node->children[i]);
     }
     break;
   }
 }
-// --------------================= TU SI SKONCIL PLESATIVEC
-// =======================----------------- Generovanie bloku kódu --- OKEY ---
+// Generovanie bloku kódu --- OKEY ---
 void generate_code_block(Generator *generator, tree_node_t *node) {
   if (!node)
     return;
@@ -914,7 +842,7 @@ void generate_code_block(Generator *generator, tree_node_t *node) {
       if (token &&
           (strcmp(token->token_lexeme, "{") == 0 ||
            strcmp(token->token_lexeme, "}") == 0 ||
-           strcmp(token->token_lexeme, "n") == 0 || // tuto --- CHECK tiez ---
+           strcmp(token->token_lexeme, "n") == 0 ||
            strcmp(token->token_lexeme, "\n") == 0)) {
         continue;
       }
@@ -938,9 +866,7 @@ void generate_sequence(Generator *generator, tree_node_t *node) {
     // Preskočiť terminály ako \n
     if (child->type == NODE_T_TERMINAL) {
       Token *token = child->token;
-      if (token && (strcmp(token->token_lexeme, "n") ==
-                        0 || // --- CHECK --- spravne alebo preklep?
-                    strcmp(token->token_lexeme, "\n") == 0)) {
+      if (token && (strcmp(token->token_lexeme, "n") == 0 || strcmp(token->token_lexeme, "\n") == 0)) {
         continue;
       }
     }
@@ -1009,8 +935,6 @@ void generate_assignment(Generator *generator, tree_node_t *node) {
     bool old_is_global = generator->is_global;
 
     // Nastaviť premennú PRED generovaním výrazu, aby funkcie vnútri výrazu
-    // mohli použiť správnu premennú (napr. pre STRLEN v Ifj.length)
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%% LENGTH
     if ((sym && sym->sym_identif_type != IDENTIF_T_SETTER) && !setter_sym) {
       generator->variable = id_token->token_lexeme;
       generator->is_global = (sym && sym->is_global) ? true : false;
@@ -1024,7 +948,6 @@ void generate_assignment(Generator *generator, tree_node_t *node) {
       generate_expression(generator, expr_node);
     }
 
-    // Generovať inštrukciu pre priradenie
     // Generovať inštrukciu pre priradenie
     if (setter_sym && setter_sym->sym_identif_type == IDENTIF_T_SETTER) {
       // Ak je to setter, volať ho ako funkciu s parametrom (hodnota je už na
@@ -1048,7 +971,7 @@ void generate_assignment(Generator *generator, tree_node_t *node) {
       // generator->variable a generator->is_global sú už nastavené vyššie
       generator_emit(generator, "POPS LF@%s", id_token->token_lexeme);
     }
-  } // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  }
 }
 
 // Generovanie deklarácie --- OKEY ---
@@ -1100,8 +1023,6 @@ void generate_declaration(Generator *generator, tree_node_t *node) {
 void generate_function_declaration(Generator *generator, tree_node_t *node) {
   if (!node)
     return;
-
-  // fprintf(stderr, "[DEBUG generate_function_declaration] Called, node->children_count = %d\n", node->children_count);
 
   // Nájsť názov funkcie (identifikátor)
   tree_node_t *func_name_node = NULL;
@@ -1178,27 +1099,6 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
   
     }
   }
-  /*
-    IDENTIF_T_VARIABLE,
-    IDENTIF_T_FUNCTION,
-    IDENTIF_T_SETTER,
-    IDENTIF_T_GETTER,
-    IDENTIF_T_UNSET
-    */
-  // Symbol *sym = search_table(func_name_node->token, generator->symtable);
-  // fprintf(stdout, "kid rule: %s, rule: %d\nsymtable? %d\n",
-  //         func_name_node->token->token_lexeme, node->rule,
-  //         sym->sym_identif_type);
-  // Removed old parameter generation logic that caused duplicates
-  // if (node->children[0]->rule && node->rule &&
-  //     (strcmp(node->children[1]->token->token_lexeme, "GR_FUN_PARAM") == 0) &&
-  //     node->rule == GR_FUN_DECLARATION) {
-  //   generator_emit(generator, "DEFVAR LF@%s",
-  //                  node->children[1]->children[0]->token->token_lexeme);
-  //   generator_emit(
-  //       generator, "POPS LF@%s",
-  //       node->children[1]->children[0]->token->token_lexeme); // FOR LOOP
-  // }
 
   // Získať symbol funkcie pre parametre
   Symbol *func_sym = NULL;
@@ -1290,7 +1190,6 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
     tree_node_t *child = node->children[i];
       if (child && child->type == NODE_T_NONTERMINAL) {
         if (child->nonterm_type == NONTERMINAL_T_CODE_BLOCK) {
-          // fprintf(stderr, "[DEBUG] code block found\n");
           code_block = child;
           break;
       }
@@ -1299,7 +1198,6 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
         tree_node_t *grandchild = child->children[j];
           if (grandchild && grandchild->type == NODE_T_NONTERMINAL &&
               grandchild->nonterm_type == NONTERMINAL_T_CODE_BLOCK) {
-            // fprintf(stderr, "[DEBUG] code block found in grandchild\n");
             code_block = grandchild;
             break;
         }
@@ -1310,15 +1208,8 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
   }
 
   if (code_block) {
-    // fprintf(stderr, "[DEBUG generate_function_declaration] Found code_block, generating...\n");
     generate_code_block(generator, code_block);
-    // fprintf(stderr, "[DEBUG generate_function_declaration] Code block generation finished\n");
-  } else {
-    // fprintf(stderr, "[DEBUG generate_function_declaration] No code_block found!\n");
   }
-
-  // Vymazať zásobník pred popnutím rámca
-  // generator_emit(generator, "CLEARS");
 
   // Popnúť rámec pred returnom
   // Implicit return nil if execution reaches here (only if no explicit return was generated)
@@ -1327,12 +1218,10 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
       generator_emit(generator, "POPFRAME");
       // generator_emit(generator, "EXIT"); // Or just end
   } else if (!generator->has_return) {
-      // fprintf(stderr, "[DEBUG generate_function_declaration] Generating implicit return (no explicit return found)\n");
       generator_emit(generator, "PUSHS nil@nil");
       generator_emit(generator, "POPFRAME");
       generator_emit(generator, "RETURN");
   } else {
-      // fprintf(stderr, "[DEBUG generate_function_declaration] Skipping implicit return (explicit return already generated)\n");
       // Don't emit anything - return already handled POPFRAME and RETURN
   }
 
@@ -1342,24 +1231,6 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
     generator->current_function = NULL;
   }
 }
-
-// Generovanie deklarácie getteru
-// void generate_getter_declaration(Generator *generator, tree_node_t *node) {
-//   // Getter je podobný funkcii, ale má špecifickú logiku
-//   // Pre teraz použijeme rovnakú logiku ako funkcia
-//   generator->is_getter = true;
-//   generate_function_declaration(generator, node);
-//   generator->is_getter = false;
-// }
-
-// Generovanie deklarácie setteru
-// void generate_setter_declaration(Generator *generator, tree_node_t *node) {
-//   // Setter je podobný funkcii, ale má špecifickú logiku
-//   // Pre teraz použijeme rovnakú logiku ako funkcia
-//   generator->is_setter = true;
-//   generate_function_declaration(generator, node);
-//   generator->is_setter = false;
-// }
 
 // Helper function to check built-in function parameters
 void check_builtin_params(Generator *generator, char *func_name, tree_node_t *node) {
@@ -1416,7 +1287,6 @@ void check_builtin_params(Generator *generator, char *func_name, tree_node_t *no
 
         int expected_type = expected_types[arg_index];
         
-        // Check literal types
         // Check literal types
         Token *token_to_check = NULL;
         tree_node_t *current = child;
@@ -1502,12 +1372,6 @@ void check_builtin_params(Generator *generator, char *func_name, tree_node_t *no
                          generator->error = ERR_T_SEMANTIC_ERR_BUILTIN_FN_BAD_PARAM;
                          return;
                     }
-                    // Cannot distinguish int/float from VAR_T_NUM easily without more info, 
-                    // assuming VAR_T_NUM is generic number. 
-                    // If we have separate types for int/float in symbol, check them.
-                    // Looking at symbol.h: VAR_T_NUM, VAR_T_STRING, VAR_T_NULL. 
-                    // So we can't distinguish int vs float in symbol table yet?
-                    // If so, we can only check string vs number.
                 } else if (expected_type == 2) { // Expect float
                     if (sym->sym_variable_type == VAR_T_STRING) {
                          generator->error = ERR_T_SEMANTIC_ERR_BUILTIN_FN_BAD_PARAM;
@@ -1554,7 +1418,7 @@ void generate_function_call(Generator *generator, tree_node_t *node) {
     snprintf(full_func_name, sizeof(full_func_name), "Ifj.%s", func_name);
     func_name = full_func_name;
   } else if (func_name) {
-    // Check if it's a built-in function without Ifj prefix (due to parser changes)
+    // Check if it's a built-in function without Ifj prefix
     if (strcmp(func_name, "write") == 0 ||
         strcmp(func_name, "read_num") == 0 ||
         strcmp(func_name, "read_str") == 0 ||
@@ -1593,9 +1457,6 @@ void generate_function_call(Generator *generator, tree_node_t *node) {
     if (strcmp(suffix, "write") == 0) {
       // WRITE - iterate over arguments
       Symbol *sym = search_table(func_name_node->token, generator->symtable);  
-      // fprintf(stdout, "kid rule: %s, rule: %d\nsymtable? %d\n",
-      //         node->token->token_lexeme, node->rule,
-      //         sym->sym_identif_type);
       for (int i = 0; i < node->children_count; i++) {
         tree_node_t *child = node->children[i];
         if (child == func_name_node)
@@ -1772,11 +1633,6 @@ void generate_function_call(Generator *generator, tree_node_t *node) {
       free(s); free(p1); free(p2); free(res); free(len); free(cond); free(char_val);
       return;
     } else if (strcmp(suffix, "str") == 0) {
-      // FLOAT2STRS (or INT2STRS if we knew types, but for now assume float or
-      // rely on dynamic typing if supported, otherwise default to float
-      // conversion as 'str' usually implies generic to string) IFJ25 spec might
-      // require specific instruction. Using FLOAT2STRS as in original code for
-      // now.
       for (int i = 0; i < node->children_count; i++) {
         tree_node_t *child = node->children[i];
         if (child == func_name_node)
@@ -1786,21 +1642,6 @@ void generate_function_call(Generator *generator, tree_node_t *node) {
         if (child->nonterm_type == NONTERMINAL_T_EXPRESSION ||
             child->nonterm_type == NONTERMINAL_T_FUN_PARAM) {
           generate_expression(generator, child);
-          // Try to support both? No, instructions are typed.
-          // If we assume 'str' is for numbers.
-          // Original code used FLOAT2STRS.
-          // Let's stick to FLOAT2STRS but maybe we need INT2STRS?
-          // The testPrg uses it on result of factorial (int).
-          // So INT2STRS is likely needed.
-          // But we don't know the type here easily.
-          // However, if we look at what 'str' does in Wren, it converts
-          // anything to string. IFJcode25 might have INT2CHAR? No that's ascii.
-          // INT2STRS is likely the one.
-          // I will use INT2STRS because factorial returns int.
-          // Ideally we should check type or have a generic instruction.
-          // Since I cannot check type at compile time easily here, I will use
-          // INT2STRS as it fits the test case. Wait, previous code had
-          // FLOAT2STRS. I will use INT2STRS for now as it fits the test case.
           if(generator->is_float){
             generator_emit(generator, "FLOAT2STRS");
             generator->is_float = false;
@@ -2039,7 +1880,6 @@ void generate_if(Generator *generator, tree_node_t *node) {
     } else {
       // Pre ostatné operátory: nil aj false sú falsy
       char *cond_res = get_temp_var(generator);
-      fprintf(stderr, "cond_res: %s\n", cond_res);
       generator_emit(generator, "DEFVAR %s", cond_res);
       generator_emit(generator, "POPS %s", cond_res);
 
@@ -2152,10 +1992,7 @@ void generate_return(Generator *generator, tree_node_t *node) {
   if (!node)
     return;
 
-  // fprintf(stderr, "[DEBUG generate_return] Called, node->children_count = %d\n", node->children_count);
-  // fprintf(stderr, "[DEBUG generate_return] node->rule = %d, node->type = %d\n", node->rule, node->type);
   if (node->token) {
-    // fprintf(stderr, "[DEBUG generate_return] node->token->token_lexeme = %s\n", node->token->token_lexeme);
   }
 
   // Nájsť výraz (ak existuje)
@@ -2166,11 +2003,7 @@ void generate_return(Generator *generator, tree_node_t *node) {
   tree_node_t *expr_node = NULL;
   for (int i = 0; i < node->children_count; i++) {
     tree_node_t *child = node->children[i];
-    // fprintf(stderr, "[DEBUG generate_return] Checking child[%d]: type=%d, nonterm_type=%d, rule=%d\n", 
-            // i, child->type, child->nonterm_type, child->rule);
     if (child->token) {
-      // fprintf(stderr, "[DEBUG generate_return]   child[%d]->token->token_lexeme = %s, token_type = %d\n", 
-              // i, child->token->token_lexeme, child->token->token_type);
     }
     // Check token type FIRST (more reliable than node type which may not be set)
     if (child->token && (child->token->token_type == TOKEN_T_NUM ||
@@ -2179,31 +2012,26 @@ void generate_return(Generator *generator, tree_node_t *node) {
                          child->token->token_type == TOKEN_T_GLOBAL_VAR ||
                          child->token->token_type == TOKEN_T_KEYWORD)) {
       // Terminálny uzol (aj keď type nie je nastavený) - check token type first!
-      // fprintf(stderr, "[DEBUG generate_return] Found expression node (by token type)\n");
       expr_node = child;
       break;
     } else if (child->type == NODE_T_NONTERMINAL &&
         (child->nonterm_type == NONTERMINAL_T_EXPRESSION ||
          child->nonterm_type == NONTERMINAL_T_EXPRESSION_OR_FN)) {
-      // fprintf(stderr, "[DEBUG generate_return] Found expression node (nonterminal)\n");
       expr_node = child;
       break;
     } else if (child->type == NODE_T_TERMINAL) {
       // Terminálny uzol (číslo, string, keyword) je výraz
-      // fprintf(stderr, "[DEBUG generate_return] Found expression node (terminal)\n");
       expr_node = child;
       break;
     } else if (child->token && child->token->token_type == TOKEN_T_OPERATOR && child->children_count > 0) {
       // Node s operátorom a deťmi je výraz (z rule_expression_1)
       // Necheckujeme child->type lebo tree_init() ho nenastavuje
-      // fprintf(stderr, "[DEBUG generate_return] Found expression node (operator)\n");
       expr_node = child;
       break;
     }
   }
 
   if (expr_node) {
-    // fprintf(stderr, "[DEBUG generate_return] expr_node found, generating expression...\n");
     // Generovať výraz (vloží výsledok na zásobník)
     // DÔLEŽITÉ: Checkujeme token type FIRST, lebo node type môže byť nesprávne nastavený
     if (expr_node->token && (expr_node->token->token_type == TOKEN_T_STRING ||
@@ -2212,25 +2040,19 @@ void generate_return(Generator *generator, tree_node_t *node) {
                              expr_node->token->token_type == TOKEN_T_GLOBAL_VAR ||
                              expr_node->token->token_type == TOKEN_T_KEYWORD)) {
       // Terminálny uzol - check token type first (more reliable)
-      // fprintf(stderr, "[DEBUG generate_return] Generating terminal (by token type)\n");
       generate_terminal(generator, expr_node);
     } else if (expr_node->token && expr_node->token->token_type == TOKEN_T_OPERATOR && expr_node->children_count > 0) {
-      // fprintf(stderr, "[DEBUG generate_return] Generating operator expression\n");
       // Pre operátorové uzly (z rule_expression_1) ktoré nemajú type nastavený
       generate_expression(generator, expr_node);
     } else if (expr_node->type == NODE_T_TERMINAL) {
-      // fprintf(stderr, "[DEBUG generate_return] Generating terminal (by node type)\n");
       generate_terminal(generator, expr_node);
     } else if (expr_node->nonterm_type == NONTERMINAL_T_EXPRESSION_OR_FN) {
-      // fprintf(stderr, "[DEBUG generate_return] Generating expression_or_fn\n");
       generator_generate(generator, expr_node);
     } else {
       // Pre ostatné uzly
-      // fprintf(stderr, "[DEBUG generate_return] Generating expression (fallback)\n");
       generate_expression(generator, expr_node);
     }
   } else {
-    // fprintf(stderr, "[DEBUG generate_return] expr_node is NULL, trying fallback search...\n");
     // Ak sme nenašli výraz, skúsime nájsť akýkoľvek child ktorý nie je terminálny token
     // (môže to byť výraz ktorý nemá správne nastavené polia)
     // Skúsime aj rekurzívne hľadať v deťoch
@@ -2270,18 +2092,13 @@ void generate_return(Generator *generator, tree_node_t *node) {
   }
 
   // Return inštrukcia
-  // fprintf(stderr, "[DEBUG generate_return] is_called = %d, expr_node = %p\n", generator->is_called, expr_node);
   if (!generator->is_called) {
     if (!expr_node) {
-        // fprintf(stderr, "[DEBUG generate_return] No expr_node, pushing nil@nil\n");
         generator_emit(generator, "PUSHS nil@nil"); // Default return value if no expression
     }
-    // fprintf(stderr, "[DEBUG generate_return] Emitting POPFRAME and RETURN\n");
     generator_emit(generator, "POPFRAME");
     generator_emit(generator, "RETURN");
     generator->has_return = true;  // Mark that return was generated
-  } else {
-    // fprintf(stderr, "[DEBUG generate_return] Skipping POPFRAME/RETURN because is_called = true\n");
   }
 }
 

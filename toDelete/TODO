@@ -1,5 +1,2 @@
 IDIVS check
 ERROR returns in runtime errors
-read_num for int and float?
-rework read to only take float and if there is any operation make it in float numbers
-fix calling functions with no arguments and same name as one with arguments
