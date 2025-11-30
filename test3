@@ -90,13 +90,13 @@ class Program {
         __d = Ifj.write(myValue)
         __d = Ifj.write("\n")
 
+        var valStr 
         while (valueFromUser > 0 - 2) {  // prikaz cyklu; nemame zaporne literaly, takze -2 napiseme jako (0-2)
             __d = Ifj.write("Jedeme dolu! ")
             __d = Ifj.write(valueFromUser)  // pokud byla zadana hodnota desetinna, vypise ji v hexadecimalnim formatu
             __d = Ifj.write(" -> ")
             valueFromUser = valueFromUser - 1
 
-            var valStr 
             valStr = Ifj.str(valueFromUser)  /* pokud byla zadana hodnota desetinna, 
                                               * vypise ji v decimalnim formatu se dvema desetinnymi misty */
             __d = Ifj.write(valStr)

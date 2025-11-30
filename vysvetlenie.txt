@@ -1,0 +1,3 @@
+CREATEFRAME - zmaze TF a novy vytvori TF
+PUSHFRAME - z TF do LF
+POPFRAME - LF -> TF

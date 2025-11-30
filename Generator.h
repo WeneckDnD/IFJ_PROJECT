@@ -24,6 +24,12 @@ typedef struct generator {
   int global_count;
   bool is_float;
   bool has_return;  // Flag to track if return statement was generated
+  bool tf_created;
+  char *buffer;
+  size_t buffer_len;
+  size_t buffer_cap;
+  int buffering;
+  int in_while_loop;  // Flag to track if inside while loop body
 } Generator;
 
 // Inicializácia a základné funkcie

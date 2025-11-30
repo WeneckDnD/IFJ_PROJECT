@@ -1,0 +1,18 @@
+import "ifj25" for Ifj
+class Program { 
+
+    static main() {
+        var x
+        x = 5
+        {
+            var x
+            x = 10
+            {
+                var x
+                x = 15
+            }
+        }
+        __b = "hello" * x
+        __a = Ifj.write(__b)
+    }   
+}

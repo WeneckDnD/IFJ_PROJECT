@@ -32,8 +32,14 @@ Generator *init_generator(Symtable *symtable) {
   gen->is_called = false;
   gen->is_float = false;
   gen->has_return = false;
+  gen->buffer = NULL;
+  gen->buffer_len = 0;
+  gen->buffer_cap = 0;
+  gen->buffering = 0;
+  gen->in_while_loop = 0;
   gen->global_vars = NULL;
   gen->global_count = 0;
+  gen->tf_created = false;
 
   return gen;
 }
@@ -139,9 +145,11 @@ char *get_temp_var(Generator *generator) {
     generator->error = ERR_T_MALLOC_ERR;
     return NULL;
   }
-  if (generator->in_function) {
-    sprintf(temp, "LF@tmp_%d", generator->temp_var_counter++);
+  if (generator->tf_created) {
+    sprintf(temp, "TF@tmp_%d", generator->temp_var_counter++);
   } else {
+    generator_emit(generator, "CREATEFRAME");
+    generator->tf_created = true;
     sprintf(temp, "TF@tmp_%d", generator->temp_var_counter++);
   }
   return temp;
@@ -437,7 +445,6 @@ void generate_strcmp_comparison(Generator *generator, tree_node_t *node) {
   generator_emit(generator, "POPS %s", temp_var1);
 
   // Generovať labely pre skoky
-  char *label_less = get_next_label(generator);
   char *label_equal = get_next_label(generator);
   char *label_greater = get_next_label(generator);
   char *label_end = get_next_label(generator);
@@ -471,11 +478,30 @@ void generate_strcmp_comparison(Generator *generator, tree_node_t *node) {
 
   free(temp_var1);
   free(temp_var2);
-  free(label_less);
   free(label_equal);
   free(label_greater);
   free(label_end);
 }
+
+
+static int get_scope_suffix(Generator *generator, Token *token) {
+  if (!token) return generator->current_scope;
+  Symbol *sym = search_table(token, generator->symtable);
+  if (sym) {
+      if (sym->sym_identif_declaration_count > 0) {
+        // fprintf(stderr, "DEBUG: Found symbol %s, declared at scope %d\n", token->token_lexeme, sym->sym_identif_declared_at_scope_arr[0]);
+        return sym->sym_identif_declared_at_scope_arr[0];
+      } else {
+        // fprintf(stderr, "DEBUG: Symbol %s found but decl count is %d\n", token->token_lexeme, sym->sym_identif_declaration_count);
+      }
+  } else {
+      // fprintf(stderr, "DEBUG: Symbol %s not found in search_table\n", token->token_lexeme);
+  }
+  // fprintf(stderr, "DEBUG: Symbol %s not found or no decl, returning current scope %d\n", token->token_lexeme, generator->current_scope);
+  // Return current scope when symbol not found (fallback)
+  return generator->current_scope;
+}
+
 
 // Generovanie terminalu (identifikátor, literál, operátor) --- OKEY ---
 void generate_terminal(Generator *generator, tree_node_t *node) {
@@ -604,11 +630,14 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
       } else if (sym->is_global) { // co je is_global a kde to je definovane
         generator_emit(generator, "PUSHS GF@%s", token->token_lexeme);
       } else {
-        generator_emit(generator, "PUSHS LF@%s", token->token_lexeme);
+        int scope = get_scope_suffix(generator, token);
+        // fprintf(stdout, "%d\n", scope);
+        generator_emit(generator, "PUSHS LF@%s$%d", token->token_lexeme, scope);
       }
     } else { // ---- DOUBLE CHECK ---- podla zadania skontrolovat ci ak sa
              // nenajde symbol ma to byt GF alebo LF
-      generator_emit(generator, "PUSHS LF@%s", token->token_lexeme);
+      int scope = get_scope_suffix(generator, token);
+      generator_emit(generator, "PUSHS LF@%s$%d", token->token_lexeme, scope);
     }
     break;
   }
@@ -620,7 +649,7 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
   }
 }
 
-// generovanie "is" pre typovú kontrolu --- CHECK ---
+// generovanie "is" pre typovú kontrolu
 static void generate_type_check(Generator *generator, tree_node_t *node) {
   if (!node || node->children_count < 2)
     return;
@@ -629,26 +658,212 @@ static void generate_type_check(Generator *generator, tree_node_t *node) {
   generate_expression(generator, node->children[0]);
 
   // Skontrolovať pravý operand (typ - napr. Null, Num, String)
-  // Ak je to typ Num, použijeme ISINTS namiesto TYPES + EQS
-  int is_num_check = 0;
   tree_node_t *right_operand = node->children[1];
   if (right_operand && right_operand->type == NODE_T_TERMINAL &&
       right_operand->token &&
       right_operand->token->token_type == TOKEN_T_KEYWORD) {
+    
     if (strcmp(right_operand->token->token_lexeme, "Num") == 0) {
-      is_num_check = 1;
-    }
-  }
+      // Pre typ Num skontrolujeme či je to int alebo float
+      // Stack: [value] -> TYPES -> [type_string]
+      generator_emit(generator, "TYPES");
+      
+      char *type_var = get_temp_var(generator);
+      generator_emit(generator, "DEFVAR %s", type_var);
+      generator_emit(generator, "POPS %s", type_var);
 
-  if (is_num_check) {
-    // Pre typ Num použijeme ISINTS (kontrola, či je číslo celé)
-    generator_emit(generator, "ISINTS");
+      // Check int
+      generator_emit(generator, "PUSHS %s", type_var);
+      generator_emit(generator, "PUSHS string@int");
+      generator_emit(generator, "EQS"); 
+
+      // Check float
+      generator_emit(generator, "PUSHS %s", type_var);
+      generator_emit(generator, "PUSHS string@float");
+      generator_emit(generator, "EQS"); 
+
+      // OR
+      generator_emit(generator, "ORS");
+      
+      free(type_var);
+    } else if (strcmp(right_operand->token->token_lexeme, "String") == 0) {
+      // Pre typ String použijeme TYPES + EQS s string@string
+      generator_emit(generator, "TYPES");
+      generator_emit(generator, "PUSHS string@string");
+      generator_emit(generator, "EQS");
+    } else if (strcmp(right_operand->token->token_lexeme, "Null") == 0) {
+      // Pre typ Null použijeme priame porovnanie s nil@nil
+      generator_emit(generator, "PUSHS nil@nil");
+      generator_emit(generator, "EQS");
+    } else {
+        // Fallback pre iné typy (ak existujú)
+        generate_expression(generator, node->children[1]);
+        generator_emit(generator, "TYPES");
+        generator_emit(generator, "EQS");
+    }
   } else {
-    // Pre ostatné typy (Null, String) použijeme TYPES + EQS
+    // Pre ostatné prípady (nie keyword)
     generate_expression(generator, node->children[1]);
     generator_emit(generator, "TYPES");
     generator_emit(generator, "EQS");
   }
+}
+
+// Forward declaration
+static bool is_number_type(Generator *generator, tree_node_t *node);
+
+// Helper to check if a node evaluates to a string
+static bool is_string_type(Generator *generator, tree_node_t *node) {
+  if (!node) return false;
+
+  if (node->type == NODE_T_TERMINAL) {
+    if (node->token) {
+      if (node->token->token_type == TOKEN_T_STRING) return true;
+      if (node->token->token_type == TOKEN_T_IDENTIFIER || node->token->token_type == TOKEN_T_GLOBAL_VAR) {
+        Symbol *sym = search_table(node->token, generator->symtable);
+        if (sym && sym->sym_variable_type == VAR_T_STRING) return true;
+      }
+    }
+    return false;
+  }
+
+  // Binary +
+  if (node->token && strcmp(node->token->token_lexeme, "+") == 0 && node->children_count == 2) {
+    // If either operand is a string, the result is a string (concatenation)
+    return is_string_type(generator, node->children[0]) || is_string_type(generator, node->children[1]);
+  }
+
+  // Binary * with string
+  if (node->token && strcmp(node->token->token_lexeme, "*") == 0 && node->children_count == 2) {
+    // If left is string and right is number, result is string
+    if (is_string_type(generator, node->children[0]) && is_number_type(generator, node->children[1])) {
+      return true;
+    }
+  }
+
+  // Function calls
+  if (node->nonterm_type == NONTERMINAL_T_FUN_CALL || node->nonterm_type == NONTERMINAL_T_EXPRESSION_OR_FN) {
+    if (node->children_count > 0 && node->children[0]->token) {
+      char *name = node->children[0]->token->token_lexeme;
+      if (strcmp(name, "read_str") == 0 || strcmp(name, "str") == 0 || 
+          strcmp(name, "substring") == 0 || strcmp(name, "chr") == 0) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+// Helper to check if a node evaluates to a number (int or float)
+static bool is_number_type(Generator *generator, tree_node_t *node) {
+  if (!node) return false;
+
+  if (node->type == NODE_T_TERMINAL) {
+    if (node->token) {
+      if (node->token->token_type == TOKEN_T_NUM) return true;
+      if (node->token->token_type == TOKEN_T_IDENTIFIER || node->token->token_type == TOKEN_T_GLOBAL_VAR) {
+        Symbol *sym = search_table(node->token, generator->symtable);
+        if (sym && sym->sym_variable_type == VAR_T_NUM) return true;
+      }
+    }
+    return false;
+  }
+
+  // Binary arithmetic operations with numbers result in numbers
+  if (node->token && node->children_count == 2) {
+    const char *op = node->token->token_lexeme;
+    if (strcmp(op, "+") == 0 || strcmp(op, "-") == 0 || 
+        strcmp(op, "*") == 0 || strcmp(op, "/") == 0) {
+      // If both operands are numbers, result is number
+      if (is_number_type(generator, node->children[0]) && is_number_type(generator, node->children[1])) {
+        return true;
+      }
+    }
+  }
+
+  // Function calls that return numbers
+  if (node->nonterm_type == NONTERMINAL_T_FUN_CALL || node->nonterm_type == NONTERMINAL_T_EXPRESSION_OR_FN) {
+    if (node->children_count > 0 && node->children[0]->token) {
+      char *name = node->children[0]->token->token_lexeme;
+      if (strcmp(name, "read_num") == 0 || strcmp(name, "floor") == 0 || 
+          strcmp(name, "length") == 0 || strcmp(name, "ord") == 0) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+// Helper to get operand string for CONCAT
+static char *get_operand_for_concat(Generator *generator, tree_node_t *node) {
+  if (node->type == NODE_T_TERMINAL) {
+    Token *token = node->token;
+    if (token->token_type == TOKEN_T_STRING) {
+      char *str_value = token->token_lexeme;
+      char *clean_str = NULL;
+      if (str_value[0] == '"' && str_value[strlen(str_value) - 1] == '"') {
+        int len = strlen(str_value) - 2;
+        clean_str = malloc(len + 1);
+        if (clean_str) {
+          strncpy(clean_str, str_value + 1, len);
+          clean_str[len] = '\0';
+        }
+      } else {
+        clean_str = malloc(strlen(str_value) + 1);
+        if (clean_str) strcpy(clean_str, str_value);
+      }
+      
+      char *converted = convert_string(clean_str);
+      free(clean_str);
+      
+      if (!converted) {
+        return NULL;
+      }
+      
+      char *result = malloc(strlen(converted) + 10);
+      if (!result) {
+        free(converted);
+        return NULL;
+      }
+      sprintf(result, "string@%s", converted);
+      free(converted);
+      return result;
+    } else if (token->token_type == TOKEN_T_IDENTIFIER || token->token_type == TOKEN_T_GLOBAL_VAR) {
+       Symbol *sym = search_table(token, generator->symtable);
+       
+       bool is_getter = false;
+       if (!sym || (sym->sym_identif_type != IDENTIF_T_VARIABLE && sym->sym_identif_type != IDENTIF_T_FUNCTION)) {
+         Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
+         if (getter_sym) is_getter = true;
+       }
+       if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) is_getter = true;
+       
+       if (!is_getter) {
+         char *result = malloc(strlen(token->token_lexeme) + 20);
+         if (!result) {
+           return NULL;
+         }
+         if (sym && sym->is_global) {
+           sprintf(result, "GF@%s", token->token_lexeme);
+         } else {
+           int scope = get_scope_suffix(generator, token);
+           sprintf(result, "LF@%s$%d", token->token_lexeme, scope);
+         }
+         return result;
+       }
+    }
+  }
+  
+  generate_expression(generator, node);
+  char *temp = get_temp_var(generator);
+  if (!temp) {
+    return NULL;
+  }
+  generator_emit(generator, "DEFVAR %s", temp);
+  generator_emit(generator, "POPS %s", temp);
+  return temp;
 }
 
 // Generovanie výrazu (rekurzívne, zásobníkový prístup)
@@ -705,6 +920,112 @@ void generate_expression(Generator *generator, tree_node_t *node) {
         if (strcmp(node->token->token_lexeme, "is") == 0) {
           generate_type_check(generator, node);
           return;
+        }
+
+        if (strcmp(node->token->token_lexeme, "+") == 0) {
+             // If either operand is a string, use CONCAT
+             if (is_string_type(generator, node->children[0]) || is_string_type(generator, node->children[1])) {
+                 char *op1 = get_operand_for_concat(generator, node->children[0]);
+                 char *op2 = get_operand_for_concat(generator, node->children[1]);
+                 
+                 char *temp_res = get_temp_var(generator);
+                 generator_emit(generator, "DEFVAR %s", temp_res);
+                 generator_emit(generator, "CONCAT %s %s %s", temp_res, op1, op2);
+                 generator_emit(generator, "PUSHS %s", temp_res);
+                 
+                 free(op1);
+                 free(op2);
+                 free(temp_res);
+                 return;
+             }
+        }
+
+        if (strcmp(node->token->token_lexeme, "*") == 0) {
+             // If left operand is string and right is number, repeat string
+             if (is_string_type(generator, node->children[0]) && is_number_type(generator, node->children[1])) {
+                 // Generate string operand
+                 char *str_op = get_operand_for_concat(generator, node->children[0]);
+                 if (!str_op) {
+                   generator->error = ERR_T_MALLOC_ERR;
+                   return;
+                 }
+                 
+                 // Generate number operand
+                 generate_expression(generator, node->children[1]);
+                 
+                 // Convert to int if needed (FLOAT2INTS)
+                 generator_emit(generator, "FLOAT2INTS");
+                 
+                 // Variables for the loop
+                 char *str_var = get_temp_var(generator);
+                 char *count_var = get_temp_var(generator);
+                 char *result_var = get_temp_var(generator);
+                 char *i_var = get_temp_var(generator);
+                 char *cond_var = get_temp_var(generator);
+                 
+                 if (!str_var || !count_var || !result_var || !i_var || !cond_var) {
+                   if (str_var) free(str_var);
+                   if (count_var) free(count_var);
+                   if (result_var) free(result_var);
+                   if (i_var) free(i_var);
+                   if (cond_var) free(cond_var);
+                   free(str_op);
+                   generator->error = ERR_T_MALLOC_ERR;
+                   return;
+                 }
+                 
+                 int label_idx = generator->label_counter++;
+                 
+                 // Define variables
+                 generator_emit(generator, "DEFVAR %s", str_var);
+                 generator_emit(generator, "DEFVAR %s", count_var);
+                 generator_emit(generator, "DEFVAR %s", result_var);
+                 generator_emit(generator, "DEFVAR %s", i_var);
+                 generator_emit(generator, "DEFVAR %s", cond_var);
+                 
+                 // Pop operands: count (top)
+                 generator_emit(generator, "POPS %s", count_var);
+                 
+                 // Load string operand (can be literal or variable reference)
+                 generator_emit(generator, "MOVE %s %s", str_var, str_op);
+                 
+                 // Initialize result as empty string
+                 generator_emit(generator, "MOVE %s string@", result_var);
+                 
+                 // Initialize counter i = 0
+                 generator_emit(generator, "MOVE %s int@0", i_var);
+                 
+                 // Loop label
+                 generator_emit(generator, "LABEL strmul_loop_%d", label_idx);
+                 
+                 // Check if i < count
+                 generator_emit(generator, "LT %s %s %s", cond_var, i_var, count_var);
+                 generator_emit(generator, "JUMPIFEQ strmul_end_%d %s bool@false", label_idx, cond_var);
+                 
+                 // Concatenate: result = result + str
+                 generator_emit(generator, "CONCAT %s %s %s", result_var, result_var, str_var);
+                 
+                 // Increment i
+                 generator_emit(generator, "ADD %s %s int@1", i_var, i_var);
+                 
+                 // Jump back to loop
+                 generator_emit(generator, "JUMP strmul_loop_%d", label_idx);
+                 
+                 // End label
+                 generator_emit(generator, "LABEL strmul_end_%d", label_idx);
+                 
+                 // Push result on stack
+                 generator_emit(generator, "PUSHS %s", result_var);
+                 
+                 // Free variables
+                 free(str_var);
+                 free(count_var);
+                 free(result_var);
+                 free(i_var);
+                 free(cond_var);
+                 free(str_op);
+                 return;
+             }
         }
 
         generate_expression(generator, node->children[0]);
@@ -969,7 +1290,8 @@ void generate_assignment(Generator *generator, tree_node_t *node) {
       generator_emit(generator, "POPS GF@%s", id_token->token_lexeme);
     } else {
       // generator->variable a generator->is_global sú už nastavené vyššie
-      generator_emit(generator, "POPS LF@%s", id_token->token_lexeme);
+      int scope = get_scope_suffix(generator, id_token);
+      generator_emit(generator, "POPS LF@%s$%d", id_token->token_lexeme, scope);
     }
   }
 }
@@ -995,22 +1317,29 @@ void generate_declaration(Generator *generator, tree_node_t *node) {
 
         // Generovať DEFVAR pre premennú
         if (sym && sym->is_global) {
-        } else {
-          generator_emit(generator, "DEFVAR LF@%s", id_token->token_lexeme);
+          // Global variables are handled separately
+        } else if (!generator->in_while_loop) {
+          // Only emit DEFVAR if not inside a while loop (already hoisted)
+          int scope = get_scope_suffix(generator, id_token);
+          generator_emit(generator, "DEFVAR LF@%s$%d", id_token->token_lexeme, scope);
         }
 
         // Ak je premenná inicializovaná, generovať aj priradenie
         // Hľadať výraz alebo priradenie v deťoch
         for (int i = 1; i < node->children_count; i++) {
           tree_node_t *child = node->children[i];
-          if (child->nonterm_type == NONTERMINAL_T_EXPRESSION ||
-              child->nonterm_type == NONTERMINAL_T_ASSIGNMENT) {
+          if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
             generate_expression(generator, child);
             if (sym && sym->is_global) {
               generator_emit(generator, "POPS GF@%s", id_token->token_lexeme);
             } else {
-              generator_emit(generator, "POPS LF@%s", id_token->token_lexeme);
+              int scope = get_scope_suffix(generator, id_token);
+              generator_emit(generator, "POPS LF@%s$%d", id_token->token_lexeme, scope);
             }
+            break;
+          } else if (child->nonterm_type == NONTERMINAL_T_ASSIGNMENT) {
+            // For assignment nodes, use generator_generate to handle it properly
+            generator_generate(generator, child);
             break;
           }
         }
@@ -1091,6 +1420,7 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
   // Vytvoriť a pushnúť rámec
   generator_emit(generator, "CREATEFRAME");
   generator_emit(generator, "PUSHFRAME");
+  generator->tf_created = false; // TF is now LF, so TF is undefined
   if(strcmp(func_name, "main") == 0){
     for(int i = 0; i < generator->global_count; i++) {
       generator_emit(generator, "DEFVAR GF@%s", generator->global_vars[i]);
@@ -1115,8 +1445,9 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
           tree_node_t *param_node = node->children[1]->children[0];
           if (param_node && param_node->token && param_node->token->token_type == TOKEN_T_IDENTIFIER) {
               char *param_name = param_node->token->token_lexeme;
-              generator_emit(generator, "DEFVAR LF@%s", param_name);
-              generator_emit(generator, "POPS LF@%s", param_name);
+              int scope = get_scope_suffix(generator, param_node->token);
+              generator_emit(generator, "DEFVAR LF@%s$%d", param_name, scope);
+              generator_emit(generator, "POPS LF@%s$%d", param_name, scope);
           }
       }
   }
@@ -1147,7 +1478,8 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
 
     if (param_node) {
         // Collect parameters first to handle order
-        char *params[32]; // Assuming max 32 params for simplicity, or use dynamic array
+        // char *params[32]; // Assuming max 32 params for simplicity, or use dynamic array
+        Token *params[32];
         int p_count = 0;
         
         tree_node_t *current = param_node;
@@ -1156,7 +1488,7 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
             for (int i = 0; i < current->children_count; i++) {
                 tree_node_t *child = current->children[i];
                 if (child->type == NODE_T_TERMINAL && child->token && child->token->token_type == TOKEN_T_IDENTIFIER) {
-                     params[p_count++] = child->token->token_lexeme;
+                     params[p_count++] = child->token;
                 }
             }
             
@@ -1173,12 +1505,14 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
 
         // DEFVAR for all params
         for (int i = 0; i < p_count; i++) {
-            generator_emit(generator, "DEFVAR LF@%s", params[i]);
+            int scope = get_scope_suffix(generator, params[i]);
+            generator_emit(generator, "DEFVAR LF@%s$%d", params[i]->token_lexeme, scope);
         }
 
         // POPS in reverse order (last param is on top of stack)
         for (int i = p_count - 1; i >= 0; i--) {
-            generator_emit(generator, "POPS LF@%s", params[i]);
+            int scope = get_scope_suffix(generator, params[i]);
+            generator_emit(generator, "POPS LF@%s$%d", params[i]->token_lexeme, scope);
         }
     }
   }
@@ -1216,6 +1550,7 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
   if (strcmp(generator->current_function, "main") == 0) {
       // For main, just pop frame (optional, but good practice)
       generator_emit(generator, "POPFRAME");
+      generator->tf_created = false;
       // generator_emit(generator, "EXIT"); // Or just end
   } else if (!generator->has_return) {
       generator_emit(generator, "PUSHS nil@nil");
@@ -1878,6 +2213,15 @@ void generate_if(Generator *generator, tree_node_t *node) {
       // Pre operátor != použijeme JUMPIFNEQS (skáče ak sa hodnoty nerovnajú)
       generator_emit(generator, "JUMPIFNEQS %s", else_label);
     } else {
+      // Detect if expression has an operator
+      int has_operator = 0;
+      if (predicate_node->children_count > 0) {
+        tree_node_t *expr = predicate_node->children[0];
+        if (expr->token && expr->token->token_type == TOKEN_T_OPERATOR) {
+          has_operator = 1;
+        }
+      }
+      
       // Pre ostatné operátory: nil aj false sú falsy
       char *cond_res = get_temp_var(generator);
       generator_emit(generator, "DEFVAR %s", cond_res);
@@ -1888,10 +2232,13 @@ void generate_if(Generator *generator, tree_node_t *node) {
       generator_emit(generator, "PUSHS nil@nil");
       generator_emit(generator, "JUMPIFEQS %s", else_label);
 
-      // Check if false
-      generator_emit(generator, "PUSHS %s", cond_res);
-      generator_emit(generator, "PUSHS bool@false");
-      generator_emit(generator, "JUMPIFEQS %s", else_label);
+      // Only check false if there's an operator (expression returns boolean)
+      // Single variables don't need false check - not nil = truthy
+      if (has_operator) {
+        generator_emit(generator, "PUSHS %s", cond_res);
+        generator_emit(generator, "PUSHS bool@false");
+        generator_emit(generator, "JUMPIFEQS %s", else_label);
+      }
       
       free(cond_res);
     }
@@ -1920,6 +2267,51 @@ void generate_if(Generator *generator, tree_node_t *node) {
   free(end_label);
 }
 
+// Helper function to collect local variable declarations in a subtree
+void collect_local_vars_in_subtree(tree_node_t *node, Token ***tokens, int *count, Symtable *symtable) {
+  if (!node) return;
+
+  // Check if this is a variable declaration
+  if (node->rule == GR_DECLARATION && node->children_count > 0) {
+    tree_node_t *id_node = node->children[0];
+    if (id_node && id_node->token && id_node->token->token_type == TOKEN_T_IDENTIFIER) {
+      char *var_name = id_node->token->token_lexeme;
+      
+      // Skip temporary variables
+      if (strncmp(var_name, "tmp_", 4) == 0) {
+        return;
+      }
+      
+      // Check if it's a local variable (not global)
+      Symbol *sym = search_table(id_node->token, symtable);
+      if (sym && !sym->is_global) {
+        // Check if already in the list
+        int found = 0;
+        for (int i = 0; i < *count; i++) {
+          if ((*tokens)[i] && strcmp((*tokens)[i]->token_lexeme, var_name) == 0) {
+            found = 1;
+            break;
+          }
+        }
+        
+        // Add to list if not found
+        if (!found) {
+          *tokens = realloc(*tokens, (*count + 1) * sizeof(Token*));
+          if (*tokens) {
+            (*tokens)[*count] = id_node->token;
+            (*count)++;
+          }
+        }
+      }
+    }
+  }
+
+  // Recursively process children
+  for (int i = 0; i < node->children_count; i++) {
+    collect_local_vars_in_subtree(node->children[i], tokens, count, symtable);
+  }
+}
+
 // Generovanie while cyklu
 void generate_while(Generator *generator, tree_node_t *node) {
   if (!node)
@@ -1928,10 +2320,7 @@ void generate_while(Generator *generator, tree_node_t *node) {
   char *loop_label = get_next_label(generator);
   char *end_label = get_next_label(generator);
 
-  // Loop label (začiatok cyklu)
-  generator_emit(generator, "LABEL %s", loop_label);
-
-  // Generovať predikát
+  // Find the body block first to collect variables
   tree_node_t *predicate_node = NULL;
   tree_node_t *body_block = NULL;
 
@@ -1944,6 +2333,29 @@ void generate_while(Generator *generator, tree_node_t *node) {
     }
   }
 
+  // Collect all local variable declarations in the loop body
+  Token **local_var_tokens = NULL;
+  int var_count = 0;
+  if (body_block) {
+    collect_local_vars_in_subtree(body_block, &local_var_tokens, &var_count, generator->symtable);
+  }
+
+  // Emit DEFVAR for all collected variables BEFORE the loop label
+  for (int i = 0; i < var_count; i++) {
+    if (local_var_tokens[i]) {
+      int scope = get_scope_suffix(generator, local_var_tokens[i]);
+      generator_emit(generator, "DEFVAR LF@%s$%d", local_var_tokens[i]->token_lexeme, scope);
+    }
+  }
+
+  // Loop label (začiatok cyklu)
+  generator_emit(generator, "LABEL %s", loop_label);
+  
+  // Clear TF at the start of each iteration
+  generator_emit(generator, "CREATEFRAME");
+  generator->tf_created = true;
+
+  // Generovať predikát
   if (predicate_node) {
     // Predikát má výraz ako dieťa - spracovať ho cez generator_generate
     // (ktorý správne spracuje NONTERMINAL_T_PREDICATE cez generate_expression)
@@ -1974,7 +2386,9 @@ void generate_while(Generator *generator, tree_node_t *node) {
 
   // Telo cyklu
   if (body_block) {
+    generator->in_while_loop = 1;  // Set flag before generating body
     generate_code_block(generator, body_block);
+    generator->in_while_loop = 0;  // Reset flag after body
   }
 
   // Skok späť na začiatok
@@ -1982,6 +2396,11 @@ void generate_while(Generator *generator, tree_node_t *node) {
 
   // End label
   generator_emit(generator, "LABEL %s", end_label);
+
+  // Free allocated memory
+  if (local_var_tokens) {
+    free(local_var_tokens);
+  }
 
   free(loop_label);
   free(end_label);
@@ -2103,54 +2522,54 @@ void generate_return(Generator *generator, tree_node_t *node) {
 }
 
 // Generovanie EXIT inštrukcie
-void generate_exit(Generator *generator, tree_node_t *node) {
-  if (!node)
-    return;
+// void generate_exit(Generator *generator, tree_node_t *node) {
+//   if (!node)
+//     return;
 
-  // Nájsť výraz (exit code)
-  tree_node_t *expr_node = NULL;
-  for (int i = 0; i < node->children_count; i++) {
-    tree_node_t *child = node->children[i];
-    if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
-      expr_node = child;
-      break;
-    }
-  }
+//   // Nájsť výraz (exit code)
+//   tree_node_t *expr_node = NULL;
+//   for (int i = 0; i < node->children_count; i++) {
+//     tree_node_t *child = node->children[i];
+//     if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
+//       expr_node = child;
+//       break;
+//     }
+//   }
 
-  if (expr_node) {
-    // Generovať výraz (exit code na zásobníku)
-    generate_expression(generator, expr_node);
-  } else {
-    // Default exit code 0
-    generator_emit(generator, "PUSHS int@0");
-  }
+//   if (expr_node) {
+//     // Generovať výraz (exit code na zásobníku)
+//     generate_expression(generator, expr_node);
+//   } else {
+//     // Default exit code 0
+//     generator_emit(generator, "PUSHS int@0");
+//   }
 
-  // EXIT inštrukcia
-  generator_emit(generator, "EXIT");
-}
+//   // EXIT inštrukcia
+//   generator_emit(generator, "EXIT");
+// }
 
 // Generovanie BREAK inštrukcie
-void generate_break(Generator *generator, tree_node_t *node) {
-  if (!node)
-    return;
-  generator_emit(generator, "BREAK");
-}
+// void generate_break(Generator *generator, tree_node_t *node) {
+//   if (!node)
+//     return;
+//   generator_emit(generator, "BREAK");
+// }
 
 // Generovanie DPRINT inštrukcie
-void generate_dprint(Generator *generator, tree_node_t *node) {
-  if (!node)
-    return;
-  // Nájsť výraz (hodnota na výpis)
-  tree_node_t *expr_node = NULL;
-  for (int i = 0; i < node->children_count; i++) {
-    tree_node_t *child = node->children[i];
-    if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
-      expr_node = child;
-      break;
-    }
-  }
-  if (expr_node) {
-    generate_expression(generator, expr_node);
-  }
-  generator_emit(generator, "DPRINT");
-}
+// void generate_dprint(Generator *generator, tree_node_t *node) {
+//   if (!node)
+//     return;
+//   // Nájsť výraz (hodnota na výpis)
+//   tree_node_t *expr_node = NULL;
+//   for (int i = 0; i < node->children_count; i++) {
+//     tree_node_t *child = node->children[i];
+//     if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
+//       expr_node = child;
+//       break;
+//     }
+//   }
+//   if (expr_node) {
+//     generate_expression(generator, expr_node);
+//   }
+//   generator_emit(generator, "DPRINT");
+// }

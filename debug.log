@@ -1,39 +1,335 @@
-[DEBUG generate_function_declaration] Called, node->children_count = 2
-[DEBUG] code block found in grandchild
-[DEBUG generate_function_declaration] Found code_block, generating...
-[DEBUG generate_return] Called, node->children_count = 1
-[DEBUG generate_return] node->rule = 28, node->type = 1
-[DEBUG generate_return] node->token->token_lexeme = GR_RETURN
-[DEBUG generate_return] Checking child[0]: type=16, nonterm_type=1229562448, rule=31
-[DEBUG generate_return]   child[0]->token->token_lexeme = "hello getter", token_type = 2
-[DEBUG generate_return] Found expression node (by token type)
-[DEBUG generate_return] expr_node found, generating expression...
-[DEBUG generate_return] Generating terminal (by token type)
-[DEBUG generate_return] is_called = 0, expr_node = 0x58ed4949b040
-[DEBUG generate_return] Emitting POPFRAME and RETURN
-[DEBUG generate_function_declaration] Code block generation finished
-[DEBUG generate_function_declaration] Skipping implicit return (explicit return already generated)
-[DEBUG generate_function_declaration] Called, node->children_count = 2
-[DEBUG] code block found in grandchild
-[DEBUG generate_function_declaration] Found code_block, generating...
-[DEBUG generate_terminal] Looking for identifier: val
-[DEBUG generate_terminal] search_table result: 0x58ed49498b70
-[DEBUG generate_terminal] sym->sym_identif_type = 4
-[DEBUG generate_terminal] Trying to find getter with prefix...
-[DEBUG generate_terminal] getter_sym = (nil)
-[DEBUG generate_terminal] sym found, type=4, is_getter=0
-[DEBUG generate_terminal] Pushing local variable
-[DEBUG generate_function_declaration] Code block generation finished
-[DEBUG generate_function_declaration] Generating implicit return (no explicit return found)
-[DEBUG generate_function_declaration] Called, node->children_count = 2
-[DEBUG] code block found
-[DEBUG generate_function_declaration] Found code_block, generating...
-[DEBUG generate_terminal] Looking for identifier: getter
-[DEBUG generate_terminal] search_table result: 0x58ed4949a0e0
-[DEBUG generate_terminal] sym->sym_identif_type = 4
-[DEBUG generate_terminal] Trying to find getter with prefix...
-[DEBUG generate_terminal] getter_sym = 0x58ed4949ac90
-[DEBUG generate_terminal] Found getter!
-[DEBUG generate_terminal] sym found, type=3, is_getter=1
-[DEBUG generate_terminal] Calling getter function
-[DEBUG generate_function_declaration] Code block generation finished
+DEBUG: search_table called for foo
+DEBUG: Found symbol foo in table with scope 101
+DEBUG: search_table called for val
+DEBUG: Found symbol val in table with scope 101
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: search_table called for main
+DEBUG: Found symbol main in table with scope 101
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: search_table called for y
+DEBUG: Found symbol y in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: search_table called for __a
+DEBUG: Found symbol __a in table with scope 103
+DEBUG: search_table called for __a
+DEBUG: Found symbol __a in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Entering scope 1
+DEBUG: search_table called for foo
+DEBUG: Found symbol foo in table with scope 101
+DEBUG: search_table called for foo
+DEBUG: Found symbol foo in table with scope 101
+DEBUG: search_table called for val
+DEBUG: Found symbol val in table with scope 101
+DEBUG: search_table called for val
+DEBUG: Found symbol val in table with scope 101
+DEBUG: Entering scope 2
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: generate_terminal called for val (type 0)
+DEBUG: search_table called for val
+DEBUG: Found symbol val in table with scope 101
+DEBUG: Checking previous scopes for val (current scope 102, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Found symbol val in table with scope 102
+DEBUG: search_table called for val
+DEBUG: Found symbol val in table with scope 101
+DEBUG: Checking previous scopes for val (current scope 102, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Found symbol val in table with scope 102
+DEBUG: Symbol val found but decl count is 0
+DEBUG: Symbol val not found or no decl, returning current scope 2
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: generate_terminal called for x (type 0)
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Exiting scope 2
+DEBUG: search_table called for main
+DEBUG: Found symbol main in table with scope 101
+DEBUG: search_table called for main
+DEBUG: Found symbol main in table with scope 101
+DEBUG: Entering scope 2
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: search_table called for y
+DEBUG: Found symbol y in table with scope 103
+DEBUG: search_table called for y
+DEBUG: Found symbol y in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: generate_terminal called for 5 (type 1)
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Entering scope 3
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: generate_terminal called for 10 (type 1)
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 104, scope count 3)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Entering scope 4
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: generate_terminal called for 15 (type 1)
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Previous scope[3] = 105
+DEBUG: Found symbol x in table with scope 103
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 104
+DEBUG: Checking previous scopes for x (current scope 105, scope count 4)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Previous scope[2] = 104
+DEBUG: Found symbol x in table with scope 105
+DEBUG: Exiting scope 4
+DEBUG: Exiting scope 3
+DEBUG: search_table called for __a
+DEBUG: Found symbol __a in table with scope 103
+DEBUG: search_table called for write
+DEBUG: Found symbol write in table with scope 103
+DEBUG: generate_terminal called for x (type 0)
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+DEBUG: search_table called for x
+DEBUG: Found symbol x in table with scope 102
+DEBUG: Checking previous scopes for x (current scope 103, scope count 2)
+DEBUG: Previous scope[0] = 101
+DEBUG: Previous scope[1] = 103
+DEBUG: Found symbol x in table with scope 103
+Generator: in_function = 1
+DEBUG: Exiting scope 2
+DEBUG: Exiting scope 1

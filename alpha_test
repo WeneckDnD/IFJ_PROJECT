@@ -1,24 +1,89 @@
 import "ifj25" for Ifj
 class Program {
-    static getAnswer(val) {
-        return val + 42
+    static getAnswer(arg) {
+        if (arg is Num) {   // podmineny prikaz, operator porovnani typu
+            if (arg - 1 > 32 * 84.1 / 2.4) {  // porovnavaci vyraz ma na obou stranach zase vyrazy
+                // v zakladnim zadani neumime volat funkci mimo prirazeni, proto zde prirazujeme
+                // navratovou hodnotu (kazda funkce nejakou ma) napr. do "dummy" globalni promenne __d
+                __d = Ifj.write("Celkem velke cislo!\n")
+            } else  {
+               // v zakladnim zadani je vyzadovana else vetev, i kdyz je prazdna
+            }
+            arg = arg * 42  // prikaz prirazeni
+            var ansStr 
+            ansStr = Ifj.str(arg)  // volani vestavene funkce
+            return "Odpoved je " + ansStr
+        } else {  // else sekce je v zakladnim zadani povinna
+            __d = Ifj.write("Neplatny argument\n")
+            return null
+        }
+    }
+    static getAnswer() {
+        return 42  // prikaz navratu z funkce
     }
 
+    static unicorn {
+        if (__a) {
+            return __a + 10
+        } else {
+            return null
+        }
+    }
+
+    static unicorn() {
+        __d = Ifj.write("Jsem ve funkci unicorn, ne v getteru\n")
+    }
+
+    static unicorn=(val) {  
+        __d = Ifj.write("Jsem jednorozci setter, ziskal jsem ")
+        __d = Ifj.str(val)
+        __f = Ifj.write(__d)
+        __d = Ifj.write("\n")
+        __a = val
+    }
     static main() {
-        var x
-        var y
-        var value
-        var str
-        x = 5.2
-        y = 1
-        value = x + y
-        str = Ifj.str(value)
-        x = Ifj.write(str)
-        var returnVal
-        returnVal = getAnswer(5)
-        var returnValStr
-        returnValStr = Ifj.str(returnVal)
-        x = Ifj.write("\n")
-        x = Ifj.write(returnValStr)
+        __d = Ifj.write(unicorn)
+        __d =  Ifj.write("\n")
+
+        unicorn = 5
+
+        var myValue
+        myValue = unicorn
+        __d = Ifj.write(myValue)  // vypise 15
+        __d = Ifj.write("\n")
+
+        myValue = unicorn()  // zavola funkci, ta vypise "Jsem ve funkci unicorn, ne v getteru\n"
+        __d = Ifj.write(myValue)   // vypise null (funkce neurcila navratovou hodnotu, implicitne null)
+        __d = Ifj.write("\n")
+
+        __d = Ifj.write("Napis cislo:\n")
+        var valueFromUser
+        valueFromUser = Ifj.read_num()
+        myValue = getAnswer(valueFromUser)  // zavola pretizenou funkci getAnswer(arg)
+        if (myValue == null) {
+            __d = Ifj.write("ODPOVED NENI!\n")
+            // konec programu; return musi v zakladnim zadani vyraz urcujici navratovou hodnotu
+            return null
+        } else {
+            if (myValue is Null) {
+                // tato podminka je semanticky ekvivalentni podmince myValue == null,
+                // sem se proto uz nikdy nedostaneme
+            } else {
+            }
+        }
+        __d = Ifj.write(myValue)
+        __d = Ifj.write("\n")
+        while (valueFromUser > 0 - 2) {  // prikaz cyklu; nemame zaporne literaly, takze -2 napiseme jako (0-2)
+            var valStr
+            __d = Ifj.write("Jedeme dolu! ")
+            __d = Ifj.write(valueFromUser)  // pokud byla zadana hodnota desetinna, vypise ji v hexadecimalnim formatu
+            __d = Ifj.write(" -> ")
+            valueFromUser = valueFromUser - 1
+
+            valStr = Ifj.str(valueFromUser)  /* pokud byla zadana hodnota desetinna, 
+                                              * vypise ji v decimalnim formatu se dvema desetinnymi misty */
+            __d = Ifj.write(valStr)
+            __d = Ifj.write("\n")
+        }
     }
 }

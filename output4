@@ -1,47 +1,3 @@
-[SCOPE DEBUG] Entering code block - scope level: 1
-[SCOPE DEBUG] Generating function 'getAnswer' at scope level: 1
-[SCOPE DEBUG] Entering code block - scope level: 2
-[SCOPE DEBUG] Processing IF statement at scope level: 2
-[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Processing IF statement at scope level: 3
-[SCOPE DEBUG] Entering code block - scope level: 4
-[SCOPE DEBUG] Exiting code block - returning to scope level: 3
-[SCOPE DEBUG] Entering code block - scope level: 4
-[SCOPE DEBUG] Exiting code block - returning to scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Exiting code block - returning to scope level: 1
-[SCOPE DEBUG] Generating function 'getAnswer' at scope level: 1
-[SCOPE DEBUG] Entering code block - scope level: 2
-[SCOPE DEBUG] Exiting code block - returning to scope level: 1
-[SCOPE DEBUG] Generating function 'getter+unicorn' at scope level: 1
-[SCOPE DEBUG] Entering code block - scope level: 2
-[SCOPE DEBUG] Processing IF statement at scope level: 2
-[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Exiting code block - returning to scope level: 1
-[SCOPE DEBUG] Generating function 'unicorn' at scope level: 1
-[SCOPE DEBUG] Entering code block - scope level: 2
-[SCOPE DEBUG] Exiting code block - returning to scope level: 1
-[SCOPE DEBUG] Generating function 'setter+unicorn' at scope level: 1
-[SCOPE DEBUG] Entering code block - scope level: 2
-[SCOPE DEBUG] Exiting code block - returning to scope level: 1
-[SCOPE DEBUG] Generating function 'main' at scope level: 1
-[SCOPE DEBUG] Entering code block - scope level: 2
-[SCOPE DEBUG] Processing IF statement at scope level: 2
-[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Processing IF statement at scope level: 3
-[SCOPE DEBUG] Entering code block - scope level: 4
-[SCOPE DEBUG] Exiting code block - returning to scope level: 3
-[SCOPE DEBUG] Entering code block - scope level: 4
-[SCOPE DEBUG] Exiting code block - returning to scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Processing WHILE loop at scope level: 2
 .IFJcode25
 JUMP main
 LABEL getAnswer$0
@@ -315,11 +271,7 @@ DEFVAR LF@valStr
 LABEL LABEL_10
 CREATEFRAME
 PUSHS LF@valueFromUser
-PUSHS flo[SCOPE DEBUG] Entering code block - scope level: 3
-[SCOPE DEBUG] Exiting code block - returning to scope level: 2
-[SCOPE DEBUG] Exiting code block - returning to scope level: 1
-[SCOPE DEBUG] Exiting code block - returning to scope level: 0
-at@0x0p+0
+PUSHS float@0x0p+0
 PUSHS float@0x1p+1
 SUBS
 GTS

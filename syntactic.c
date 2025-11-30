@@ -1101,6 +1101,8 @@ tree_node_t *rule_expression_1(tree_node_t *lhs, int min_precedence, Syntactic *
         tree_node_t *node_op;
         tree_init(&node_op);
         node_op->token = op;
+        node_op->type = NODE_T_NONTERMINAL;  // ADDED
+        node_op->nonterm_type = NONTERMINAL_T_EXPRESSION;  // ADDED
 
         tree_insert_child(node_op, lhs);
         tree_insert_child(node_op, rhs);
