@@ -30,6 +30,8 @@ typedef struct generator {
   size_t buffer_cap;
   int buffering;
   int in_while_loop;  // Flag to track if inside while loop body
+  char **function_params;  // Array of parameter names for current function
+  int function_param_count;  // Number of parameters in current function	
 } Generator;
 
 // Inicializácia a základné funkcie

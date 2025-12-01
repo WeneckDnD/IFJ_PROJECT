@@ -40,6 +40,8 @@ Generator *init_generator(Symtable *symtable) {
   gen->global_vars = NULL;
   gen->global_count = 0;
   gen->tf_created = false;
+  gen->function_params = NULL;
+  gen->function_param_count = 0;
 
   return gen;
 }
@@ -486,20 +488,148 @@ void generate_strcmp_comparison(Generator *generator, tree_node_t *node) {
 
 static int get_scope_suffix(Generator *generator, Token *token) {
   if (!token) return generator->current_scope;
-  Symbol *sym = search_table(token, generator->symtable);
-  if (sym) {
-      if (sym->sym_identif_declaration_count > 0) {
-        // fprintf(stderr, "DEBUG: Found symbol %s, declared at scope %d\n", token->token_lexeme, sym->sym_identif_declared_at_scope_arr[0]);
-        return sym->sym_identif_declared_at_scope_arr[0];
-      } else {
-        // fprintf(stderr, "DEBUG: Symbol %s found but decl count is %d\n", token->token_lexeme, sym->sym_identif_declaration_count);
+  
+  // Collect all symbols with matching name
+  Symbol *candidates[32];
+  int candidate_count = 0;
+  for (int i = 0; i < generator->symtable->symtable_size && candidate_count < 32; i++) {
+      Symbol *s = generator->symtable->symtable_rows[i].symbol;
+      if (!s || !s->sym_lexeme) continue;
+      if (strcmp(s->sym_lexeme, token->token_lexeme) == 0 && 
+          s->sym_identif_type == IDENTIF_T_VARIABLE && !s->is_global && !s->is_parameter) {
+          candidates[candidate_count++] = s;
       }
-  } else {
-      // fprintf(stderr, "DEBUG: Symbol %s not found in search_table\n", token->token_lexeme);
   }
-  // fprintf(stderr, "DEBUG: Symbol %s not found or no decl, returning current scope %d\n", token->token_lexeme, generator->current_scope);
-  // Return current scope when symbol not found (fallback)
+  
+  if (candidate_count == 0) {
   return generator->current_scope;
+}
+
+  int token_scope = token->scope;
+  int token_line = token->token_line_number;
+  
+  // Simple strategy: Check if variable is declared in current scope BEFORE this usage
+  // If yes, use current scope. If no, use the highest parent scope that has a declaration.
+  
+  // First: Check if declared in current scope BEFORE the token
+  for (int c = 0; c < candidate_count; c++) {
+      Symbol *s = candidates[c];
+      if (!s->sym_identif_declaration_count) continue;
+      
+      for (int i = 0; i < s->sym_identif_declaration_count; i++) {
+          if (s->sym_identif_declared_at_scope_arr[i] == token_scope) {
+              int decl_line = s->sym_identif_declared_at_line_arr[i];
+              if (decl_line < token_line) {
+                  // Found declaration in current scope before usage - use it
+                  return token_scope;
+              }
+          }
+      }
+  }
+  
+  // Not declared in current scope before usage - find declaration in parent scopes
+  // Build list of parent scopes
+  int parent_scopes[64];
+  int parent_count = 0;
+  
+  if (token->previous_scope_arr && token->scope_count > 0) {
+      for (int j = 0; j < token->scope_count; j++) {
+          parent_scopes[parent_count++] = token->previous_scope_arr[j];
+      }
+  }
+  
+  // Also check generator->current_scope if it's different and might be a parent
+  if (generator->current_scope != token_scope) {
+      // Check if it's already in parent_scopes
+      bool found = false;
+      for (int j = 0; j < parent_count; j++) {
+          if (parent_scopes[j] == generator->current_scope) {
+              found = true;
+              break;
+          }
+      }
+      if (!found) {
+          parent_scopes[parent_count++] = generator->current_scope;
+      }
+  }
+  
+  // Find the highest scope number (most recent) among parent scopes that has a declaration
+  // IMPORTANT: Only consider declarations that occur BEFORE the usage line
+  int best_parent_scope = -1;
+  for (int c = 0; c < candidate_count; c++) {
+      Symbol *s = candidates[c];
+      if (!s->sym_identif_declaration_count) continue;
+      
+      for (int i = 0; i < s->sym_identif_declaration_count; i++) {
+          int decl_scope = s->sym_identif_declared_at_scope_arr[i];
+          int decl_line = s->sym_identif_declared_at_line_arr[i];
+          
+          // Skip declarations that occur AFTER the usage line
+          if (decl_line >= token_line) {
+              continue;
+          }
+          
+          // Check if this declaration scope is in parent scopes
+          for (int p = 0; p < parent_count; p++) {
+              if (parent_scopes[p] == decl_scope) {
+                  // Found declaration in a parent scope BEFORE usage
+                  // Prefer the highest scope number (most recent/closest parent)
+                  if (best_parent_scope < 0 || decl_scope > best_parent_scope) {
+                      best_parent_scope = decl_scope;
+                  }
+              }
+          }
+      }
+  }
+  
+  if (best_parent_scope >= 0) {
+      return best_parent_scope;
+  }
+  
+  // Fallback: return the most recent declaration from first candidate
+  Symbol *sym = candidates[0];
+  if (sym && sym->sym_identif_declaration_count > 0) {
+      return sym->sym_identif_declared_at_scope_arr[sym->sym_identif_declaration_count - 1];
+  }
+  
+  // Last resort: return current scope
+  return generator->current_scope;
+}
+
+// Helper function to check if a variable name is a parameter of the current function
+static bool is_function_parameter(Generator *generator, const char *var_name) {
+  if (!generator->in_function || !var_name || !generator->function_params) {
+    return false;
+  }
+  
+  // Check against stored parameter names
+  for (int i = 0; i < generator->function_param_count; i++) {
+    if (generator->function_params[i] && strcmp(generator->function_params[i], var_name) == 0) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+// Helper function to format local variable name (parameters use no suffix, locals use suffix)
+static void format_local_var(Generator *generator, Token *token, char *buffer, size_t buffer_size) {
+  if (!token) {
+    snprintf(buffer, buffer_size, "LF@");
+    return;
+  }
+  
+  // Check if it's a function parameter using our stored parameter list
+  // This is the only reliable way since symbol table lookup has scope issues
+  if (generator->in_function && is_function_parameter(generator, token->token_lexeme)) {
+    // Parameters: no suffix
+    snprintf(buffer, buffer_size, "LF@%s", token->token_lexeme);
+    return;
+  }
+  
+  // Local variables: with scope suffix
+  int scope = get_scope_suffix(generator, token);
+  snprintf(buffer, buffer_size, "LF@%s$%d", token->token_lexeme, scope);
 }
 
 
@@ -606,9 +736,13 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
     if (sym) {
     }
     
-    // Ak sa nenašiel symbol alebo to nie je lokálna premenná/parameter, skúsime nájsť getter
+    // Ak sa nenašiel symbol alebo to nie je funkcia, skúsime nájsť getter
+    // (gettery majú prednosť pred premennými)
     int is_getter = 0;
-    if (!sym || (sym->sym_identif_type != IDENTIF_T_VARIABLE && sym->sym_identif_type != IDENTIF_T_FUNCTION)) {
+    // Ak je symbol už getter, nastavíme flag
+    if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) {
+        is_getter = 1;
+    } else if (!sym || sym->sym_identif_type != IDENTIF_T_FUNCTION) {
         // Skúsiť nájsť getter s prefixom "getter+" pomocou helper funkcie
         Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
         if (getter_sym) {
@@ -619,6 +753,8 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
 
     if (sym) {
       // Ak je to getter, volať ho ako funkciu bez parametrov
+      fprintf(stderr, "DEBUG GETTER: sym_identif_type=%d\ntoken: %s\n %d\n", sym->sym_identif_type, token->token_lexeme, is_getter);
+
       if (sym->sym_identif_type == IDENTIF_T_GETTER || is_getter) {
         generator->is_called = true;
         // Pre getter voláme funkciu s pôvodným názvom (bez prefixu ak sme ho našli cez prefix)
@@ -630,14 +766,15 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
       } else if (sym->is_global) { // co je is_global a kde to je definovane
         generator_emit(generator, "PUSHS GF@%s", token->token_lexeme);
       } else {
-        int scope = get_scope_suffix(generator, token);
-        // fprintf(stdout, "%d\n", scope);
-        generator_emit(generator, "PUSHS LF@%s$%d", token->token_lexeme, scope);
+        char var_name[256];
+        format_local_var(generator, token, var_name, sizeof(var_name));
+        generator_emit(generator, "PUSHS %s", var_name);
       }
     } else { // ---- DOUBLE CHECK ---- podla zadania skontrolovat ci ak sa
              // nenajde symbol ma to byt GF alebo LF
-      int scope = get_scope_suffix(generator, token);
-      generator_emit(generator, "PUSHS LF@%s$%d", token->token_lexeme, scope);
+      char var_name[256];
+      format_local_var(generator, token, var_name, sizeof(var_name));
+      generator_emit(generator, "PUSHS %s", var_name);
     }
     break;
   }
@@ -721,7 +858,10 @@ static bool is_string_type(Generator *generator, tree_node_t *node) {
       if (node->token->token_type == TOKEN_T_STRING) return true;
       if (node->token->token_type == TOKEN_T_IDENTIFIER || node->token->token_type == TOKEN_T_GLOBAL_VAR) {
         Symbol *sym = search_table(node->token, generator->symtable);
-        if (sym && sym->sym_variable_type == VAR_T_STRING) return true;
+        if (sym) {
+          fprintf(stderr, "DEBUG: sym_variable_type=%d\ntoken: %s\n", sym->sym_variable_type, node->token->token_lexeme);
+          if (sym->sym_variable_type == VAR_T_STRING) return true;
+        }
       }
     }
     return false;
@@ -841,15 +981,14 @@ static char *get_operand_for_concat(Generator *generator, tree_node_t *node) {
        if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) is_getter = true;
        
        if (!is_getter) {
-         char *result = malloc(strlen(token->token_lexeme) + 20);
+         char *result = malloc(strlen(token->token_lexeme) + 30);
          if (!result) {
            return NULL;
          }
          if (sym && sym->is_global) {
            sprintf(result, "GF@%s", token->token_lexeme);
          } else {
-           int scope = get_scope_suffix(generator, token);
-           sprintf(result, "LF@%s$%d", token->token_lexeme, scope);
+          format_local_var(generator, token, result, strlen(token->token_lexeme) + 30);
          }
          return result;
        }
@@ -942,6 +1081,7 @@ void generate_expression(Generator *generator, tree_node_t *node) {
 
         if (strcmp(node->token->token_lexeme, "*") == 0) {
              // If left operand is string and right is number, repeat string
+             fprintf(stderr, "DEBUG: childer[0]: %s\n", node->children[0]->token->token_lexeme);
              if (is_string_type(generator, node->children[0]) && is_number_type(generator, node->children[1])) {
                  // Generate string operand
                  char *str_op = get_operand_for_concat(generator, node->children[0]);
@@ -1290,8 +1430,10 @@ void generate_assignment(Generator *generator, tree_node_t *node) {
       generator_emit(generator, "POPS GF@%s", id_token->token_lexeme);
     } else {
       // generator->variable a generator->is_global sú už nastavené vyššie
-      int scope = get_scope_suffix(generator, id_token);
-      generator_emit(generator, "POPS LF@%s$%d", id_token->token_lexeme, scope);
+      // Parameters use no suffix, locals use suffix
+      char var_name[256];
+      format_local_var(generator, id_token, var_name, sizeof(var_name));
+      generator_emit(generator, "POPS %s", var_name);
     }
   }
 }
@@ -1320,7 +1462,9 @@ void generate_declaration(Generator *generator, tree_node_t *node) {
           // Global variables are handled separately
         } else if (!generator->in_while_loop) {
           // Only emit DEFVAR if not inside a while loop (already hoisted)
-          int scope = get_scope_suffix(generator, id_token);
+          // For declarations, use the token's own scope (where it's being declared)
+          // Don't use get_scope_suffix which searches for previous declarations
+          int scope = id_token->scope;
           generator_emit(generator, "DEFVAR LF@%s$%d", id_token->token_lexeme, scope);
         }
 
@@ -1333,8 +1477,9 @@ void generate_declaration(Generator *generator, tree_node_t *node) {
             if (sym && sym->is_global) {
               generator_emit(generator, "POPS GF@%s", id_token->token_lexeme);
             } else {
-              int scope = get_scope_suffix(generator, id_token);
-              generator_emit(generator, "POPS LF@%s$%d", id_token->token_lexeme, scope);
+              char var_name[256];
+              format_local_var(generator, id_token, var_name, sizeof(var_name));
+              generator_emit(generator, "POPS %s", var_name);
             }
             break;
           } else if (child->nonterm_type == NONTERMINAL_T_ASSIGNMENT) {
@@ -1379,6 +1524,19 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
   }
   generator->in_function = 1;
   generator->has_return = false;  // Reset return flag for each function
+
+  // Clear parameter list at the start of each function
+  // (will be populated if function has parameters)
+  if (generator->function_params) {
+      for (int i = 0; i < generator->function_param_count; i++) {
+          if (generator->function_params[i]) {
+              free(generator->function_params[i]);
+          }
+      }
+      free(generator->function_params);
+      generator->function_params = NULL;
+      generator->function_param_count = 0;
+  }
 
   Symbol *sym = search_table(func_name_node->token, generator->symtable);
 
@@ -1441,13 +1599,28 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
       // node is GR_FUN_DECLARATION
       // node->children[1] is GR_SETTER_DECLARATION
       // GR_SETTER_DECLARATION children: 0: IDENTIFIER (val), 1: CODE_BLOCK (based on debug output)
+      // Parameters use no suffix - they're declared as LF@param (not LF@param$N)
+      // Local variables in the function body will get suffixes to avoid conflicts
       if (node->children_count >= 2 && node->children[1]->children_count >= 1) {
           tree_node_t *param_node = node->children[1]->children[0];
           if (param_node && param_node->token && param_node->token->token_type == TOKEN_T_IDENTIFIER) {
               char *param_name = param_node->token->token_lexeme;
-              int scope = get_scope_suffix(generator, param_node->token);
-              generator_emit(generator, "DEFVAR LF@%s$%d", param_name, scope);
-              generator_emit(generator, "POPS LF@%s$%d", param_name, scope);
+              
+              // Store parameter name for later reference checking
+              if (generator->function_params) {
+                  for (int i = 0; i < generator->function_param_count; i++) {
+                      if (generator->function_params[i]) {
+                          free(generator->function_params[i]);
+                      }
+                  }
+                  free(generator->function_params);
+              }
+              generator->function_param_count = 1;
+              generator->function_params = malloc(sizeof(char *));
+              generator->function_params[0] = strdup(param_name);
+              
+              generator_emit(generator, "DEFVAR LF@%s", param_name);
+              generator_emit(generator, "POPS LF@%s", param_name);
           }
       }
   }
@@ -1503,16 +1676,36 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
             current = next;
         }
 
+        // Store parameter names for later reference checking
+        // Free old parameter list if any
+        if (generator->function_params) {
+            for (int i = 0; i < generator->function_param_count; i++) {
+                if (generator->function_params[i]) {
+                    free(generator->function_params[i]);
+                }
+            }
+            free(generator->function_params);
+        }
+        generator->function_param_count = p_count;
+        if (p_count > 0) {
+            generator->function_params = malloc(sizeof(char *) * p_count);
+            for (int i = 0; i < p_count; i++) {
+                generator->function_params[i] = strdup(params[i]->token_lexeme);
+            }
+        } else {
+            generator->function_params = NULL;
+        }
+
         // DEFVAR for all params
+        // Parameters use no suffix - they're declared as LF@param (not LF@param$N)
+        // Local variables in the function body will get suffixes to avoid conflicts
         for (int i = 0; i < p_count; i++) {
-            int scope = get_scope_suffix(generator, params[i]);
-            generator_emit(generator, "DEFVAR LF@%s$%d", params[i]->token_lexeme, scope);
+            generator_emit(generator, "DEFVAR LF@%s", params[i]->token_lexeme);
         }
 
         // POPS in reverse order (last param is on top of stack)
         for (int i = p_count - 1; i >= 0; i--) {
-            int scope = get_scope_suffix(generator, params[i]);
-            generator_emit(generator, "POPS LF@%s$%d", params[i]->token_lexeme, scope);
+            generator_emit(generator, "POPS LF@%s", params[i]->token_lexeme);
         }
     }
   }
@@ -1561,6 +1754,19 @@ void generate_function_declaration(Generator *generator, tree_node_t *node) {
   }
 
   generator->in_function = 0;
+  
+  // Free parameter list
+  if (generator->function_params) {
+      for (int i = 0; i < generator->function_param_count; i++) {
+          if (generator->function_params[i]) {
+              free(generator->function_params[i]);
+          }
+      }
+      free(generator->function_params);
+      generator->function_params = NULL;
+      generator->function_param_count = 0;
+  }
+  
   if (generator->current_function) {
     free(generator->current_function);
     generator->current_function = NULL;
