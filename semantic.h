@@ -26,7 +26,7 @@ void handle_rule(tree_node_t *tree_node);
 Symbol *check_if_identif_is_parameter(Symbol *symbol, Semantic *semantic);
 EXPR_TYPE infer_expression_type(tree_node_t *node, Symtable *symtable);
 bool has_relational_operator(tree_node_t *node);
-
+bool multiple_declaration_valid(Symbol *symbol);
 
 
 

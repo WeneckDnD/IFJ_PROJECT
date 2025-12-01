@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
          return syntactic->error;
     }
 
-    tree_print_tree(syntactic->tree->children[0],"",0);
     Semantic *semantic = init_semantic(syntactic->symtable);
     traverse_tree(syntactic->tree->children[0], syntactic->symtable, semantic);
     print_symtable(symtable);

@@ -431,12 +431,11 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
             }
         }else if(symbol->sym_identif_declaration_count > 1 && !symbol->is_parameter){
             //print_symbol(symbol);
-            semantic->error = 4;
-            return semantic->error;
+            if(!multiple_declaration_valid(symbol)){
+                semantic->error = 4;
+                return semantic->error;
+            }
         }
-        //print_symbol(symbol);
-
-        
     } else { // ak je neterminal
         if(tree_node->rule == GR_FUN_CALL && tree_node->children_count == 1){
             symbol = search_table(tree_node->children[0]->token,symtable);
@@ -521,4 +520,17 @@ Symbol *check_if_identif_is_parameter(Symbol *symbol, Semantic *semantic) {
 
     return NULL;
 
+}
+
+bool multiple_declaration_valid(Symbol *symbol){
+    for(int i = 0; i < symbol->sym_identif_declaration_count; i++){
+        for(int j = i + 1; j < symbol->sym_identif_declaration_count; j++){
+            // If two declarations are in the same scope, it's invalid
+            if(symbol->sym_identif_declared_at_scope_arr[i] == 
+               symbol->sym_identif_declared_at_scope_arr[j]){
+                return false;
+            }
+        }
+    }
+    return true;
 }
