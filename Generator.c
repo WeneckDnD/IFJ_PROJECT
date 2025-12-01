@@ -736,13 +736,9 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
     if (sym) {
     }
     
-    // Ak sa nenašiel symbol alebo to nie je funkcia, skúsime nájsť getter
-    // (gettery majú prednosť pred premennými)
+    // Ak sa nenašiel symbol alebo to nie je lokálna premenná/parameter, skúsime nájsť getter
     int is_getter = 0;
-    // Ak je symbol už getter, nastavíme flag
-    if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) {
-        is_getter = 1;
-    } else if (!sym || sym->sym_identif_type != IDENTIF_T_FUNCTION) {
+    if (!sym || (sym->sym_identif_type != IDENTIF_T_VARIABLE && sym->sym_identif_type != IDENTIF_T_FUNCTION)) {
         // Skúsiť nájsť getter s prefixom "getter+" pomocou helper funkcie
         Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
         if (getter_sym) {
