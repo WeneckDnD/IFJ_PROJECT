@@ -5,6 +5,7 @@
 
 #include "lexer.h"
 #include "symtable.h"
+#include "syntactic.h"
 #include "token.h"
 
 char *keyword_array[] = {"class", "if", "else", "is", "null", 
@@ -265,13 +266,14 @@ int final_state_identif(Lexer *lexer){
     Token *token = create_token(TOKEN_T_IDENTIFIER, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     Symbol *symbol = search_table(token, lexer->symtable);
     if(symbol == NULL){
+        token = create_token(TOKEN_T_IDENTIFIER, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
+
         symbol = lexer_create_identifier_sym_from_token(token);
         insert_into_symtable(lexer->symtable, symbol);
     }else {
         add_symbol_occurence(symbol, lexer->current_row, lexer->current_col, lexer->scope);
     }
     add_token_to_token_table(lexer, token);
-
     (lexer->symtable, symbol);
     lexer_start(lexer);
 }

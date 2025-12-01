@@ -74,6 +74,7 @@ typedef struct symbol {
 void copy_lexeme_from_token_to_sym(Token *token, Symbol *symbol);
 void init_identif_sym_arrays(Symbol *symbol, Token *token);
 void print_symbol(Symbol *symbol);
+void copy_symbol_usage_info(Symbol *dest, Symbol *source);
 
 Symbol *lexer_create_identifier_sym_from_token(Token *token);
 Symbol *lexer_create_global_var_sym_from_token(Token *token);

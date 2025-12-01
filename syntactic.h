@@ -55,5 +55,6 @@ int rule_function_parameters_prime(Syntactic *syntactic, Lexer *lexer, tree_node
 int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_node_t *node);
 
 void add_prefix(Token *token, char *s);
+void add_prefix_to_symbol(Symbol *symbol, char *prefix);
 
 #endif

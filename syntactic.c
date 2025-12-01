@@ -644,6 +644,32 @@ void add_prefix(Token *token, char *prefix) {
     memcpy(token->token_lexeme, prefix, prefix_len);
 }
 
+void add_prefix_to_symbol(Symbol *symbol, char *prefix) {
+    if (symbol == NULL || prefix == NULL) {
+        return;
+    }
+
+    size_t prefix_len = strlen(prefix);
+    size_t old_len = symbol->sym_lexeme_length;
+
+    symbol->sym_lexeme_length = old_len + prefix_len;
+
+    char *new_ptr = realloc(symbol->sym_lexeme, symbol->sym_lexeme_length + 1);
+    if (!new_ptr) {
+        return;
+    }
+
+    symbol->sym_lexeme = new_ptr;
+
+    // Move existing lexeme to make room for prefix
+    memmove(symbol->sym_lexeme + prefix_len,
+            symbol->sym_lexeme,
+            old_len + 1);
+
+    // Copy prefix to the beginning
+    memcpy(symbol->sym_lexeme, prefix, prefix_len);
+}
+
 int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
     // puts("rule_fn_dec_begin");
     tree_node_t *rule_fn_dec_begin_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_FUN_DECLARATION);
@@ -682,46 +708,80 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
     if(strcmp(lookahead_token->token_lexeme, "(") == 0){
         // HOTFIX
         lexer->scope = syntactic->scope_counter;
-        //Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
 
-        // update symbol table
-        Symbol *symbol = search_table(current_token, syntactic->symtable);
-        symbol->sym_identif_type = IDENTIF_T_FUNCTION;
-        symtable_add_declaration_info(symbol, current_token->token_line_number, current_token->token_col_number, syntactic->scope_counter);
+        // Find the original symbol created by lexer
+        Symbol *original_symbol = search_table(current_token, syntactic->symtable);
+
+        if (original_symbol == NULL) {
+            syntactic->error = 0;
+            return syntactic->error;
+        }
+
+        // Mark it as a function and add declaration info
+        original_symbol->sym_identif_type = IDENTIF_T_FUNCTION;
+        symtable_add_declaration_info(original_symbol, current_token->token_line_number,
+                                       current_token->token_col_number, syntactic->scope_counter);
 
         syntactic->fn_number_of_params = 0;
         rule_function_declaration(syntactic, lexer, rule_fn_dec_begin_node);
 
-        symbol_add_function_params_count(symbol, syntactic->fn_number_of_params);
-        //symbol->sym_function_number_of_params[symbol->sym_function_overload_count] = syntactic->fn_number_of_params; 
-    } else if (strcmp(lookahead_token->token_lexeme, "=") == 0) { //setter
+        symbol_add_function_params_count(original_symbol, syntactic->fn_number_of_params);
+
+    } else if (strcmp(lookahead_token->token_lexeme, "=") == 0) { // setter
         // HOTFIX
         lexer->scope = syntactic->scope_counter;
 
-        // create setter symbol
-        add_prefix(current_token, "setter+");
-        Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
-        insert_into_symtable(syntactic->symtable, new_id_symbol);
+        // Find the original symbol created by lexer
+        Symbol *original_symbol = search_table(current_token, syntactic->symtable);
 
-        // update symbol table
-        Symbol *symbol = search_table(current_token, syntactic->symtable);
-        symbol->sym_identif_type = IDENTIF_T_SETTER;
-        symtable_add_declaration_info(symbol, current_token->token_line_number, current_token->token_col_number, syntactic->scope_counter);
+        if (original_symbol == NULL) {
+            syntactic->error = 0;
+            return syntactic->error;
+        }
+
+        // Create a new setter symbol with prefix
+        Symbol *setter_symbol = lexer_create_identifier_sym_from_token(current_token);
+        add_prefix_to_symbol(setter_symbol, "setter+");
+
+        // Copy usage info from original symbol (where lexer put it)
+        copy_symbol_usage_info(setter_symbol, original_symbol);
+
+        // Set setter-specific properties
+        setter_symbol->sym_identif_type = IDENTIF_T_SETTER;
+        symtable_add_declaration_info(setter_symbol, current_token->token_line_number,
+                                       current_token->token_col_number, syntactic->scope_counter);
+
+        // Insert the setter symbol into symtable
+        insert_into_symtable(syntactic->symtable, setter_symbol);
 
         rule_setter_declaration(syntactic, lexer, rule_fn_dec_begin_node);
-    } else { //getter
+
+    } else { // getter
         // HOTFIX
         lexer->scope = syntactic->scope_counter;
 
-        // create getter symbol
-        add_prefix(current_token, "getter+");
-        Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
-        insert_into_symtable(syntactic->symtable, new_id_symbol);
+        // Find the original symbol created by lexer
+        Symbol *original_symbol = search_table(current_token, syntactic->symtable);
 
-        // update symbol table
-        Symbol *symbol = search_table(current_token, syntactic->symtable);
-        symbol->sym_identif_type = IDENTIF_T_GETTER;
-        symtable_add_declaration_info(symbol, current_token->token_line_number, current_token->token_col_number, syntactic->scope_counter);
+        if (original_symbol == NULL) {
+            syntactic->error = 0;
+            return syntactic->error;
+        }
+
+        // Create a new getter symbol with prefix
+        Symbol *getter_symbol = lexer_create_identifier_sym_from_token(current_token);
+        add_prefix_to_symbol(getter_symbol, "getter+");
+
+        // Copy usage info from original symbol (where lexer put it)
+        copy_symbol_usage_info(getter_symbol, original_symbol);
+
+        // Set getter-specific properties
+        getter_symbol->sym_identif_type = IDENTIF_T_GETTER;
+        symtable_add_declaration_info(getter_symbol, current_token->token_line_number,
+                                       current_token->token_col_number, syntactic->scope_counter);
+
+        // Insert the getter symbol into symtable
+        insert_into_symtable(syntactic->symtable, getter_symbol);
 
         rule_getter_declaration(syntactic, lexer, rule_fn_dec_begin_node);
     }

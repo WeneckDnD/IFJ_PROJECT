@@ -1,24 +1,14 @@
 import "ifj25" for Ifj
 class Program { 
-    static foo(arg){
-        __a = Ifj.write(arg)
+
+    static foo{
+        return 5
     }
 
-    static foo(){
-        var x
-    }
 
     static main() {
-        var x
-        x = 5
-        {
-            var x
-            x = 10
-            {
-                var x
-                x = 15
-            }
-        }
-        __b = foo()
+        var a
+        a = foo
+        a = foo()
     }   
 }

@@ -146,6 +146,49 @@ void symbol_add_function_params_count(Symbol *symbol, int number_of_params){
     symbol->sym_function_number_of_params[symbol->sym_identif_declaration_count-1] = number_of_params;
 }
 
+void copy_symbol_usage_info(Symbol *dest, Symbol *source) {
+    if (dest == NULL || source == NULL) {
+        return;
+    }
+
+    // Free existing usage arrays in destination
+    if (dest->sym_identif_used_at_line_arr != NULL) {
+        free(dest->sym_identif_used_at_line_arr);
+    }
+    if (dest->sym_identif_used_at_col_arr != NULL) {
+        free(dest->sym_identif_used_at_col_arr);
+    }
+    if (dest->sym_identif_used_at_scope_arr != NULL) {
+        free(dest->sym_identif_used_at_scope_arr);
+    }
+
+    // Copy use count
+    dest->sym_identif_use_count = source->sym_identif_use_count;
+
+    // Allocate and copy usage arrays
+    if (source->sym_identif_use_count > 0) {
+        dest->sym_identif_used_at_line_arr = malloc(sizeof(int) * source->sym_identif_use_count);
+        dest->sym_identif_used_at_col_arr = malloc(sizeof(int) * source->sym_identif_use_count);
+        dest->sym_identif_used_at_scope_arr = malloc(sizeof(int) * source->sym_identif_use_count);
+
+        if (dest->sym_identif_used_at_line_arr != NULL &&
+            dest->sym_identif_used_at_col_arr != NULL &&
+            dest->sym_identif_used_at_scope_arr != NULL) {
+
+            memcpy(dest->sym_identif_used_at_line_arr, source->sym_identif_used_at_line_arr,
+                   sizeof(int) * source->sym_identif_use_count);
+            memcpy(dest->sym_identif_used_at_col_arr, source->sym_identif_used_at_col_arr,
+                   sizeof(int) * source->sym_identif_use_count);
+            memcpy(dest->sym_identif_used_at_scope_arr, source->sym_identif_used_at_scope_arr,
+                   sizeof(int) * source->sym_identif_use_count);
+            }
+    } else {
+        dest->sym_identif_used_at_line_arr = NULL;
+        dest->sym_identif_used_at_col_arr = NULL;
+        dest->sym_identif_used_at_scope_arr = NULL;
+    }
+}
+
 void print_symbol(Symbol *symbol) {
 
     // ALL

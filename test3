@@ -51,19 +51,10 @@ class Program {
 
     // hlavni funkce main
     static main() {
-     __d = Ifj.write(unicorn)    /* Staticky getter muze byt parametr ve volani funkce.
-                                  * Tohle tedy prvne zavola a vyhodnoti telo getteru unicorn,
-                                  * vysledek to pak pouzije jako parametr pro zavolani Ifj.write.
-                                  * Toto volani skonci vypisem "null". */
         __d =  Ifj.write("\n")
 
-        unicorn = 5     /*  Zavola telo setteru
-                         * ten vypise zpravu "Jsem jednorozci setter, ziskal jsem 5\n" 
-                         * a nastavi glob. promennou __a na 5.
-                         * Mimochodem /* viceradkove komentare mohou byt /* vnorene */, hura. */ */
-
-        var myValue         // definice promenne - v zakladnim zadani neni s prirazenim (var myValue = ...), 
-                            // vychozi hodnota je null
+        unicorn = 5    
+        var myValue
         myValue = unicorn   // zavola telo getteru, ten vrati 15 (== __a + 10)
         __d = Ifj.write(myValue)  // vypise 15
         __d = Ifj.write("\n")

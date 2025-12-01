@@ -362,7 +362,9 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                 token = create_token(TOKEN_T_IDENTIFIER, symbol->sym_lexeme,symbol->sym_lexeme_length,
             0,0,semantic->scope_counter+100, symbol->token->previous_scope_arr, symbol->token->scope_count);
                 add_prefix(token, "getter+");
-                if (search_table_for_setter_or_getter(token, symtable) != NULL) {
+                Symbol *getter_sym = search_table_for_setter_or_getter(token, symtable);
+                if (getter_sym != NULL) {
+                    if (getter_sym->sym_identif_declaration_count)
                     return 0;
                 }
 
@@ -387,33 +389,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
             parent = parent->parent;
         }
 
-        // nedefinovana funkcia a premenna
 
-        /*if(symbol->sym_identif_declaration_count == 0 && !(tree_node->parent->rule == GR_SETTER_DECLARATION
-            || tree_node->parent->rule == GR_FUN_DECLARATION ) && !symbol->is_global){
-            
-            if(tree_node->parent != NULL){
-                if (tree_node->parent->parent != NULL){
-                    if (tree_node->parent->parent->rule == GR_FUN_DECLARATION){
-                        return semantic->error;
-                    }
-                }
-            }
-
-            if (is_in_function) {
-                if(check_if_identif_is_parameter(symbol, semantic) != NULL){
-                    return semantic->error;
-                }
-            }
-            print_symbol(symbol);
-            semantic->error = 3;
-            return semantic->error;
-        }else if(symbol->sym_identif_declaration_count == 0 && tree_node->parent->rule == GR_ASSIGNMENT
-                && !symbol->is_global){
-
-
-            return 0;
-        }*/
         if (symbol->sym_identif_declaration_count > 1 && symbol->sym_identif_type == IDENTIF_T_FUNCTION) {
             int cnt = 0;
             for (int i = 0; i < symbol->sym_identif_declaration_count; i++) {
@@ -442,6 +418,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
             if(symbol == NULL){
                 return 0;
             }
+
             bool found_param_count_match = false;
             for(int i = 0;i<symbol->sym_identif_declaration_count;i++){
                 if(symbol->sym_function_number_of_params[i] == 0){
@@ -449,6 +426,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                     break;
                 }
             }
+
             if(!found_param_count_match){
                 print_symbol(symbol);
                 semantic->error = 5;

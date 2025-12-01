@@ -28,4 +28,5 @@ void add_function_param(Symbol *symbol, Token *token);
 int identif_declared_at_least_once(Token *token, Symtable *symtable, bool is_param);
 Symbol *search_table_for_setter_or_getter(Token *token, Symtable *symtable);
 Symbol *search_table_in_scope_hierarchy(Token *token, Symtable *symtable);
+void copy_symbol_usage_info(Symbol *dest, Symbol *source);
 #endif
