@@ -4,6 +4,7 @@
 #include "lexer.h"
 #include "symtable.h"
 #include "syntactic.h"
+#include "semantic.h"
 
 //--------------------------------- added ---------------------------------
 #include "Generator.h"
@@ -27,13 +28,24 @@ int main(int argc, char *argv[]) {
     }
     
     // Syntactic analyser
+    print_symtable(symtable);
     Syntactic *syntactic = init_syntactic(symtable);
     syntactic_start(syntactic, lexer);
 
-    // printf("SYNTACTIC ERR: %i\n", syntactic->error);
-    // if(syntactic->error != 0){
-    //     return syntactic->error;
-    // } ODKOMENTOVAT !!!
+    //printf("SYNTACTIC ERR: %i\n", syntactic->error);
+    if(syntactic->error != 0){
+         return syntactic->error;
+    }
+
+    tree_print_tree(syntactic->tree->children[0], "", 0);
+
+    Semantic *semantic = init_semantic(symtable);
+    traverse_tree(syntactic->tree->children[0], symtable, semantic);
+
+    printf("Sem err: %i\n", semantic->error);
+    if(semantic->error != 0){
+         return semantic->error;
+    } 
 
     // puts("\n============================================================\n");
 
@@ -64,16 +76,6 @@ int main(int argc, char *argv[]) {
     puts("\n========================================================\n");
     tree_print_tree(t, "", 1);
     */
-
-
-
-
-
-
-
-
-
-
 
 
     // after parsing the entire input

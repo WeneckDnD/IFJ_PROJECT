@@ -18,48 +18,32 @@ class Program {
             return null
         }
     }
-    static getAnswer() {
-        return 42  // prikaz navratu z funkce
-    }
 
-    static unicorn {
-        if (__a) {
-            return __a + 10
-        } else {
-            return null
-        }
-    }
+
+
 
     static unicorn() {
         __d = Ifj.write("Jsem ve funkci unicorn, ne v getteru\n")
     }
 
-    static unicorn=(val) {  
-        __d = Ifj.write("Jsem jednorozci setter, ziskal jsem ")
-        __d = Ifj.str(val)
-        __f = Ifj.write(__d)
-        __d = Ifj.write("\n")
-        __a = val
-    }
+
     static main() {
-        __d = Ifj.write(unicorn)
+        __d = Ifj.write(5)
         __d =  Ifj.write("\n")
 
-        unicorn = 5
-
         var myValue
-        myValue = unicorn
+        myValue = 2
         __d = Ifj.write(myValue)  // vypise 15
         __d = Ifj.write("\n")
 
-        myValue = unicorn()  // zavola funkci, ta vypise "Jsem ve funkci unicorn, ne v getteru\n"
+        myValue = 5 // zavola funkci, ta vypise "Jsem ve funkci unicorn, ne v getteru\n"
         __d = Ifj.write(myValue)   // vypise null (funkce neurcila navratovou hodnotu, implicitne null)
         __d = Ifj.write("\n")
 
         __d = Ifj.write("Napis cislo:\n")
         var valueFromUser
         valueFromUser = Ifj.read_num()
-        myValue = getAnswer(valueFromUser)  // zavola pretizenou funkci getAnswer(arg)
+        myValue = 5  // zavola pretizenou funkci getAnswer(arg)
         if (myValue == null) {
             __d = Ifj.write("ODPOVED NENI!\n")
             // konec programu; return musi v zakladnim zadani vyraz urcujici navratovou hodnotu

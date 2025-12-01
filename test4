@@ -1,7 +1,15 @@
 import "ifj25" for Ifj
-
 class Program {
-    static ahojAhoj() {
-        return 1
+
+    static getArgs(arg){
+        var a
+        a = 5 + arg
+        arg = 14
+        if("string" > a){
+
+            a = 5
+        }else{
+        }
+
     }
 }

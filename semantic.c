@@ -171,6 +171,7 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
+
         return 0;
     }
     else if(strcmp(func_name, "read_str") == 0){
@@ -192,7 +193,9 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
-        if(node->children[1]->children[0]->token->token_type != TOKEN_T_NUM){
+        if(node->children[1]->children[0]->token->token_type != TOKEN_T_NUM &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_GLOBAL_VAR){
             semantic->error = 5;
             return 5;
         }
@@ -210,7 +213,9 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
-        if(node->children[1]->children[0]->token->token_type != TOKEN_T_STRING){
+        if(node->children[1]->children[0]->token->token_type != TOKEN_T_STRING &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_GLOBAL_VAR){
             semantic->error = 5;
             return 5;
         }
@@ -221,9 +226,18 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
-        if(node->children[1]->children[0]->token->token_type != TOKEN_T_STRING ||
-           node->children[1]->children[1]->token->token_type != TOKEN_T_NUM ||
-           node->children[1]->children[2]->token->token_type != TOKEN_T_NUM){
+        if((node->children[1]->children[0]->token->token_type != TOKEN_T_STRING  &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_GLOBAL_VAR) ||
+
+           (node->children[1]->children[1]->token->token_type != TOKEN_T_NUM  &&
+            node->children[1]->children[1]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[1]->token->token_type != TOKEN_T_GLOBAL_VAR) ||
+
+           (node->children[1]->children[2]->token->token_type != TOKEN_T_NUM &&
+            node->children[1]->children[2]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[2]->token->token_type != TOKEN_T_GLOBAL_VAR)){
+
             semantic->error = 5;
             return 5;
         }
@@ -234,8 +248,12 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
-        if(node->children[1]->children[0]->token->token_type != TOKEN_T_STRING ||
-           node->children[1]->children[1]->token->token_type != TOKEN_T_STRING){
+        if((node->children[1]->children[0]->token->token_type != TOKEN_T_STRING &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_GLOBAL_VAR) ||
+           (node->children[1]->children[1]->token->token_type != TOKEN_T_STRING &&
+            node->children[1]->children[1]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[1]->token->token_type != TOKEN_T_GLOBAL_VAR)){
             semantic->error = 5;
             return 5;
         }
@@ -246,8 +264,12 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
-        if(node->children[1]->children[0]->token->token_type != TOKEN_T_STRING ||
-           node->children[1]->children[1]->token->token_type != TOKEN_T_NUM){
+        if((node->children[1]->children[0]->token->token_type != TOKEN_T_STRING &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_GLOBAL_VAR )||
+           (node->children[1]->children[1]->token->token_type != TOKEN_T_NUM &&
+            node->children[1]->children[1]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[1]->token->token_type != TOKEN_T_GLOBAL_VAR)){
             semantic->error = 5;
             return 5;
         }
@@ -258,7 +280,9 @@ int check_builtin_function(tree_node_t *node, Semantic *semantic){
             semantic->error = 5;
             return 5;
         }
-        if(node->children[1]->children[0]->token->token_type != TOKEN_T_NUM){
+        if(node->children[1]->children[0]->token->token_type != TOKEN_T_NUM &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_IDENTIFIER &&
+            node->children[1]->children[0]->token->token_type != TOKEN_T_GLOBAL_VAR){
             semantic->error = 5;
             return 5;
         }
@@ -342,7 +366,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                     return 0;
                 }
 
-                if(!identif_declared_at_least_once(tree_node->token, semantic->symtable)){
+                if(!identif_declared_at_least_once(tree_node->token, semantic->symtable, false)){
                     print_symbol(symbol);
                     semantic->error = 3;
                     return semantic->error;
@@ -424,7 +448,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                 }
             }
             if(!found_param_count_match){
-                //print_symbol(symbol);
+                print_symbol(symbol);
                 semantic->error = 5;
                 return semantic->error;
             }
@@ -458,10 +482,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
         }
     }
     if(tree_node->parent && tree_node->parent->rule == GR_PREDICATE_PARENTH){
-        if(!has_relational_operator(tree_node)){
-            semantic->error = 6;
-            return semantic->error;
-        }
+
         EXPR_TYPE type = infer_expression_type(tree_node, symtable);
         if(type == TYPE_ERROR || type == TYPE_NULL){
             semantic->error = 6;

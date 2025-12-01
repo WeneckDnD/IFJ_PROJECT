@@ -1,35 +1,39 @@
 import "ifj25" for Ifj
 class Program {
+    // funkce bez parametru
     
-    static unicorn {
 
-        b = a
+    // pretizena verze funkce vyse s jednim parametrem
+    static getAnswer(arg) {
+        if (arg is Num) {   // podmineny prikaz, operator porovnani typu
+            if (arg - 1 > 32 * 84.1 / 2.4) {  // porovnavaci vyraz ma na obou stranach zase vyrazy
+                // v zakladnim zadani neumime volat funkci mimo prirazeni, proto zde prirazujeme
+                // navratovou hodnotu (kazda funkce nejakou ma) napr. do "dummy" globalni promenne __d
+                __d = Ifj.write("Celkem velke cislo!\n")
+            }else{
 
-        if (a+b+c+k) {
-        } else {
-
+            }
+            arg = arg * 42  // prikaz prirazeni
+            var ansStr 
+            ansStr = Ifj.str(arg)  // volani vestavene funkce
+            return "Odpoved je " + ansStr
+        } else {  // else sekce je v zakladnim zadani povinna
+            __d = Ifj.write("Neplatny argument\n")
+            return null
         }
-
-    } 
-    
-    static main(a,b,c) {
-        var myValue         
-                           
-        var valueFromUser
-        valueFromUser = Ifj.read_num()
     }
 
-    while (a) {
+    // staticky getter -> vraci hodnotu
 
-        if(__a){
 
-        }else{
-
-        }
-
-        x = l
+    // staticky setter -> chova se jako funkce, muze mit vedlejsi efekty, ale pristupuje se k ni jinak (viz nize)
+    static unicorn(val) {  
+        __d = Ifj.write("Jsem jednorozci setter, ziskal jsem ")
+        __d = Ifj.write(val)
+        __d = Ifj.write("\n")
+        __a = val
     }
 
-    var x
+
 
 }

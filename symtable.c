@@ -145,16 +145,18 @@ Symbol *search_table_for_setter_or_getter(Token *token, Symtable *symtable) {
     return NULL;
 }
 
-int identif_declared_at_least_once(Token *token, Symtable *symtable){
-    puts("TUSEM");
+int identif_declared_at_least_once(Token *token, Symtable *symtable, bool is_param){
+    //puts("TUSEM");
     for (int i = 0; i < symtable->symtable_size; i++) {
         Symbol *sym = symtable->symtable_rows[i].symbol;
         if (!sym || !sym->sym_lexeme) continue;
 
         // ak sa zhoduje lexema
         if (strcmp(sym->sym_lexeme, token->token_lexeme) == 0) {
-            
-            printf("COMPARING: %s       %s\n", sym->token->token_lexeme, token->token_lexeme);
+            if (is_param) {
+                return 1;
+            }
+            //printf("COMPARING: %s       %s\n", sym->token->token_lexeme, token->token_lexeme);
 
             // pozri ci symbol bol aspon raz deklaroveny v predoslych scopeoch
             for(int j = token->scope_count - 1; j >= 0 ; j--){
@@ -223,3 +225,27 @@ void symtable_add_declaration_info(Symbol *symbol, int line, int col, int scope)
     }
      
 }*/
+Symbol *search_table_in_scope_hierarchy(Token *token, Symtable *symtable) {
+    // First try exact scope match
+    Symbol *result = search_table(token, symtable);
+    if (result) return result;
+    
+    // If not found, search in all parent scopes for parameters
+    for (int i = 0; i < symtable->symtable_size; i++) {
+        Symbol *sym = symtable->symtable_rows[i].symbol;
+        if (!sym || !sym->sym_lexeme) continue;
+        
+        if (strcmp(sym->sym_lexeme, token->token_lexeme) == 0 && sym->is_parameter) {
+            // Check if this parameter's declaration scope is in the token's scope hierarchy
+            for (int j = 0; j < token->scope_count; j++) {
+                for (int k = 0; k < sym->sym_identif_declaration_count; k++) {
+                    if (token->previous_scope_arr[j] == sym->sym_identif_declared_at_scope_arr[k]) {
+                        return sym;
+                    }
+                }
+            }
+        }
+    }
+    
+    return NULL;
+}
