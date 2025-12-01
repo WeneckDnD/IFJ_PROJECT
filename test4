@@ -1,15 +1,11 @@
 import "ifj25" for Ifj
 class Program {
+    static getAnswer(){
 
-    static getArgs(arg){
-        var a
-        a = 5 + arg
-        arg = 14
-        if("string" > a){
+    }
 
-            a = 5
-        }else{
-        }
 
+    static main(){
+        a = getAnswer()
     }
 }

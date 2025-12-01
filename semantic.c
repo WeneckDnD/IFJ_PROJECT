@@ -366,7 +366,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                     return 0;
                 }
 
-                if(!identif_declared_at_least_once(tree_node->token, semantic->symtable, false)){
+                if(symbol->sym_identif_declaration_count == 0){
                     print_symbol(symbol);
                     semantic->error = 3;
                     return semantic->error;
@@ -415,16 +415,19 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
             return 0;
         }*/
         if (symbol->sym_identif_declaration_count > 1 && symbol->sym_identif_type == IDENTIF_T_FUNCTION) {
+            int cnt = 0;
             for (int i = 0; i < symbol->sym_identif_declaration_count; i++) {
                 for (int j = i + 1; j < symbol->sym_identif_declaration_count; j++) {
                     if (symbol->sym_function_number_of_params[i] ==
                         symbol->sym_function_number_of_params[j]) {
-
-                        //print_symbol(symbol);
-                        semantic->error = 4;
-                        return semantic->error;
+                        
+                        cnt++;
                     }
                 }
+            }
+            if(cnt > 1){
+                semantic->error = 4;
+                return semantic->error;
             }
         }else if(symbol->sym_identif_declaration_count > 1 && !symbol->is_parameter){
             //print_symbol(symbol);

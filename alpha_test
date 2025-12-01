@@ -19,13 +19,9 @@ class Program {
         }
     }
 
-
-
-
     static unicorn() {
         __d = Ifj.write("Jsem ve funkci unicorn, ne v getteru\n")
     }
-
 
     static main() {
         __d = Ifj.write(5)

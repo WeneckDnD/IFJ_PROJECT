@@ -667,8 +667,6 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
     }
     //TODO DOPLNIT
 
-   
-
     tree_node_t *identif_node = tree_create_terminal(current_token);
     tree_insert_child(rule_fn_dec_begin_node, identif_node);
 
@@ -680,11 +678,11 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
     //tree_node_t *rule_fn_dec_type_node;
 
 
-    // UPDATE SYMTABLE INFO
+    // function
     if(strcmp(lookahead_token->token_lexeme, "(") == 0){
         // HOTFIX
         lexer->scope = syntactic->scope_counter;
-        Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
+        //Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
 
         // update symbol table
         Symbol *symbol = search_table(current_token, syntactic->symtable);
@@ -696,7 +694,7 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
 
         symbol_add_function_params_count(symbol, syntactic->fn_number_of_params);
         //symbol->sym_function_number_of_params[symbol->sym_function_overload_count] = syntactic->fn_number_of_params; 
-    } else if (strcmp(lookahead_token->token_lexeme, "=") == 0) {
+    } else if (strcmp(lookahead_token->token_lexeme, "=") == 0) { //setter
         // HOTFIX
         lexer->scope = syntactic->scope_counter;
 
@@ -711,7 +709,7 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
         symtable_add_declaration_info(symbol, current_token->token_line_number, current_token->token_col_number, syntactic->scope_counter);
 
         rule_setter_declaration(syntactic, lexer, rule_fn_dec_begin_node);
-    } else {
+    } else { //getter
         // HOTFIX
         lexer->scope = syntactic->scope_counter;
 
@@ -989,6 +987,13 @@ int rule_setter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *nod
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
+    Symbol *symbol = search_table(current_token, syntactic->symtable);
+    if(!symbol){
+        return 0;
+    }
+
+    symtable_add_declaration_info(symbol, current_token->token_line_number, current_token->token_col_number, syntactic->scope_counter+101);
+    symbol->is_parameter = true;
 
     tree_node_t *identif_node = tree_create_terminal(current_token);
     tree_insert_child(rule_setter_declaration_node, identif_node);

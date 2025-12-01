@@ -28,19 +28,25 @@ int main(int argc, char *argv[]) {
     }
     
     // Syntactic analyser
-    print_symtable(symtable);
     Syntactic *syntactic = init_syntactic(symtable);
     syntactic_start(syntactic, lexer);
+
+    /*int scope_arr[] = {100,101};
+    Token *token = create_token(TOKEN_T_IDENTIFIER, "main",4,0,0,100,scope_arr,2);
+    Symbol *symbol = is_(token, symtable );
+    if (symbol == NULL) {
+        return 3;
+    }*/
 
     //printf("SYNTACTIC ERR: %i\n", syntactic->error);
     if(syntactic->error != 0){
          return syntactic->error;
     }
 
-    tree_print_tree(syntactic->tree->children[0], "", 0);
-
-    Semantic *semantic = init_semantic(symtable);
-    traverse_tree(syntactic->tree->children[0], symtable, semantic);
+    tree_print_tree(syntactic->tree->children[0],"",0);
+    Semantic *semantic = init_semantic(syntactic->symtable);
+    traverse_tree(syntactic->tree->children[0], syntactic->symtable, semantic);
+    print_symtable(symtable);
 
     printf("Sem err: %i\n", semantic->error);
     if(semantic->error != 0){
@@ -53,7 +59,7 @@ int main(int argc, char *argv[]) {
     // tree_print_tree(syntactic->tree->children[0], "", 0); 
 
     // added ------------ Code generator ------------ //
-    Generator *generator = init_generator(symtable);
+    /*Generator *generator = init_generator(symtable);
     if (!generator) {
         return ERR_T_MALLOC_ERR;
     }
@@ -65,7 +71,7 @@ int main(int argc, char *argv[]) {
         return gen_error;
     }
     
-    generator_free(generator);
+    generator_free(generator);*/
     // added ------------ Code generator ------------ //
 
 

@@ -1,10 +1,12 @@
 import "ifj25" for Ifj
 class Program {
     // funkce bez parametru
-    
+     static getAnswer() {
+            return null
+    }   
 
     // pretizena verze funkce vyse s jednim parametrem
-    static getAnswer(arg) {
+    static getAnswer() {
         if (arg is Num) {   // podmineny prikaz, operator porovnani typu
             if (arg - 1 > 32 * 84.1 / 2.4) {  // porovnavaci vyraz ma na obou stranach zase vyrazy
                 // v zakladnim zadani neumime volat funkci mimo prirazeni, proto zde prirazujeme
@@ -24,16 +26,22 @@ class Program {
     }
 
     // staticky getter -> vraci hodnotu
-
-
-    // staticky setter -> chova se jako funkce, muze mit vedlejsi efekty, ale pristupuje se k ni jinak (viz nize)
-    static unicorn(val) {  
-        __d = Ifj.write("Jsem jednorozci setter, ziskal jsem ")
-        __d = Ifj.write(val)
-        __d = Ifj.write("\n")
-        __a = val
+    static unicorn {
+        // __a je globalni promenna. Pokud neni zatim definovana, implicitne je hodnota null.
+        // null se v podmince chova jako false.
+        if (__a) {
+            return __a + 10
+        } else {
+            return null
+        }
     }
 
+    // staticky setter -> chova se jako funkce, muze mit vedlejsi efekty, ale pristupuje se k ni jinak (viz nize)
+  
 
+    static main(){
+        var a
+        a = getAnswer(1)
+    }
 
 }

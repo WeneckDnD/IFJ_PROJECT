@@ -263,9 +263,16 @@ int final_state_brackets(Lexer *lexer){
 
 int final_state_identif(Lexer *lexer){
     Token *token = create_token(TOKEN_T_IDENTIFIER, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
-    Symbol *symbol = lexer_create_identifier_sym_from_token(token);
+    Symbol *symbol = search_table(token, lexer->symtable);
+    if(symbol == NULL){
+        symbol = lexer_create_identifier_sym_from_token(token);
+        insert_into_symtable(lexer->symtable, symbol);
+    }else {
+        add_symbol_occurence(symbol, lexer->current_row, lexer->current_col, lexer->scope);
+    }
     add_token_to_token_table(lexer, token);
-    insert_into_symtable(lexer->symtable, symbol);
+
+    (lexer->symtable, symbol);
     lexer_start(lexer);
 }
 
@@ -311,7 +318,10 @@ int state_id_read(Lexer *lexer){
 
 int final_state_global_identif(Lexer *lexer){
     Token *token = create_token(TOKEN_T_GLOBAL_VAR, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
-    Symbol *symbol = lexer_create_global_var_sym_from_token(token);
+    Symbol *symbol = search_table(token, lexer->symtable);
+    if (symbol == NULL){
+        symbol = lexer_create_global_var_sym_from_token(token);
+    }
     add_token_to_token_table(lexer, token);
     insert_into_symtable(lexer->symtable, symbol);
     lexer_start(lexer);

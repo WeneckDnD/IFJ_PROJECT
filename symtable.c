@@ -121,10 +121,12 @@ Symbol *search_table(Token *token, Symtable *symtable) {
         Symbol *sym = symtable->symtable_rows[i].symbol;
         if (!sym || !sym->sym_lexeme) continue;
 
-        if (strcmp(sym->sym_lexeme, token->token_lexeme) == 0 && sym->sym_identif_used_at_scope_arr[0] == token->scope) {
-            
-            //puts("BEN");
-            return sym;
+        for(int j = 0; j < token->scope_count; j++){
+            if (strcmp(sym->sym_lexeme, token->token_lexeme) == 0 && token->previous_scope_arr[j] == token->scope) {
+                
+                //puts("BEN");
+                return sym;
+            }
         }
     }
 
