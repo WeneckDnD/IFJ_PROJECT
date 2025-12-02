@@ -733,23 +733,19 @@ void generate_terminal(Generator *generator, tree_node_t *node) {
     Symbol *sym = search_table(
         token, generator->symtable); // --- CHECK --- preco to je dole
     
-    if (sym) {
-    }
-    
-    // Ak sa nenašiel symbol alebo to nie je lokálna premenná/parameter, skúsime nájsť getter
+    // Vždy skúsiť nájsť getter - ak existuje, má prednosť
     int is_getter = 0;
-    if (!sym || (sym->sym_identif_type != IDENTIF_T_VARIABLE && sym->sym_identif_type != IDENTIF_T_FUNCTION)) {
-        // Skúsiť nájsť getter s prefixom "getter+" pomocou helper funkcie
-        Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
-        if (getter_sym) {
-            sym = getter_sym;
-            is_getter = 1;
-        }
+    Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
+    if (getter_sym) {
+        sym = getter_sym;
+        is_getter = 1;
+    } else if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) {
+        // Ak search_table našiel getter priamo
+        is_getter = 1;
     }
 
     if (sym) {
       // Ak je to getter, volať ho ako funkciu bez parametrov
-      fprintf(stderr, "DEBUG GETTER: sym_identif_type=%d\ntoken: %s\n %d\n", sym->sym_identif_type, token->token_lexeme, is_getter);
 
       if (sym->sym_identif_type == IDENTIF_T_GETTER || is_getter) {
         generator->is_called = true;
@@ -855,7 +851,6 @@ static bool is_string_type(Generator *generator, tree_node_t *node) {
       if (node->token->token_type == TOKEN_T_IDENTIFIER || node->token->token_type == TOKEN_T_GLOBAL_VAR) {
         Symbol *sym = search_table(node->token, generator->symtable);
         if (sym) {
-          fprintf(stderr, "DEBUG: sym_variable_type=%d\ntoken: %s\n", sym->sym_variable_type, node->token->token_lexeme);
           if (sym->sym_variable_type == VAR_T_STRING) return true;
         }
       }
@@ -969,12 +964,15 @@ static char *get_operand_for_concat(Generator *generator, tree_node_t *node) {
     } else if (token->token_type == TOKEN_T_IDENTIFIER || token->token_type == TOKEN_T_GLOBAL_VAR) {
        Symbol *sym = search_table(token, generator->symtable);
        
+       // Vždy skúsiť nájsť getter - ak existuje, má prednosť
        bool is_getter = false;
-       if (!sym || (sym->sym_identif_type != IDENTIF_T_VARIABLE && sym->sym_identif_type != IDENTIF_T_FUNCTION)) {
-         Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
-         if (getter_sym) is_getter = true;
+       Symbol *getter_sym = search_prefixed_symbol(generator->symtable, token->token_lexeme, "getter+", IDENTIF_T_GETTER);
+       if (getter_sym) {
+         is_getter = true;
+       } else if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) {
+         // Ak search_table našiel getter priamo
+         is_getter = true;
        }
-       if (sym && sym->sym_identif_type == IDENTIF_T_GETTER) is_getter = true;
        
        if (!is_getter) {
          char *result = malloc(strlen(token->token_lexeme) + 30);
@@ -1077,7 +1075,6 @@ void generate_expression(Generator *generator, tree_node_t *node) {
 
         if (strcmp(node->token->token_lexeme, "*") == 0) {
              // If left operand is string and right is number, repeat string
-             fprintf(stderr, "DEBUG: childer[0]: %s\n", node->children[0]->token->token_lexeme);
              if (is_string_type(generator, node->children[0]) && is_number_type(generator, node->children[1])) {
                  // Generate string operand
                  char *str_op = get_operand_for_concat(generator, node->children[0]);
@@ -2723,55 +2720,3 @@ void generate_return(Generator *generator, tree_node_t *node) {
   }
 }
 
-// Generovanie EXIT inštrukcie
-// void generate_exit(Generator *generator, tree_node_t *node) {
-//   if (!node)
-//     return;
-
-//   // Nájsť výraz (exit code)
-//   tree_node_t *expr_node = NULL;
-//   for (int i = 0; i < node->children_count; i++) {
-//     tree_node_t *child = node->children[i];
-//     if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
-//       expr_node = child;
-//       break;
-//     }
-//   }
-
-//   if (expr_node) {
-//     // Generovať výraz (exit code na zásobníku)
-//     generate_expression(generator, expr_node);
-//   } else {
-//     // Default exit code 0
-//     generator_emit(generator, "PUSHS int@0");
-//   }
-
-//   // EXIT inštrukcia
-//   generator_emit(generator, "EXIT");
-// }
-
-// Generovanie BREAK inštrukcie
-// void generate_break(Generator *generator, tree_node_t *node) {
-//   if (!node)
-//     return;
-//   generator_emit(generator, "BREAK");
-// }
-
-// Generovanie DPRINT inštrukcie
-// void generate_dprint(Generator *generator, tree_node_t *node) {
-//   if (!node)
-//     return;
-//   // Nájsť výraz (hodnota na výpis)
-//   tree_node_t *expr_node = NULL;
-//   for (int i = 0; i < node->children_count; i++) {
-//     tree_node_t *child = node->children[i];
-//     if (child->nonterm_type == NONTERMINAL_T_EXPRESSION) {
-//       expr_node = child;
-//       break;
-//     }
-//   }
-//   if (expr_node) {
-//     generate_expression(generator, expr_node);
-//   }
-//   generator_emit(generator, "DPRINT");
-// }

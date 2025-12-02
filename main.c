@@ -45,10 +45,10 @@ int main(int argc, char *argv[]) {
 
     Semantic *semantic = init_semantic(syntactic->symtable);
     traverse_tree(syntactic->tree->children[0], syntactic->symtable, semantic);
-    print_symtable(symtable);
+    // print_symtable(symtable);
 
-    tree_print_tree(syntactic->tree->children[0], "", 0);
-    printf("Sem err: %i\n", semantic->error);
+    // tree_print_tree(syntactic->tree->children[0], "", 0);
+    // printf("Sem err: %i\n", semantic->error);
     if(semantic->error != 0){
          return semantic->error;
     } 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     //print_symtable_lexemes(symtable);
 
     // added ------------ Code generator ------------ //
-    /*Generator *generator = init_generator(symtable);
+    Generator *generator = init_generator(symtable);
     if (!generator) {
         return ERR_T_MALLOC_ERR;
     }
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
         return gen_error;
     }
     
-    generator_free(generator);*/
+    generator_free(generator);
     // added ------------ Code generator ------------ //
 
 

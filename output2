@@ -1,684 +1,3 @@
-============================================
-==== Symbol table (19 entries, size 100): ===
-============================================
--------- Index 1 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: valStr
-Lexeme length: 6
-Identif type: VARIABLE
-Declaration count 1
-Declared at: line 93 col 13 scope 113
-Use count 4
-Used at: line 93 col 13 scope 113
-Used at: line 100 col 19 scope 118
-Used at: line 102 col 230 scope 118
-Used at: line 100 col 13 scope 118
-Global: false
-VAR type: NUM
-
--------- Index 4 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: read_num
-Lexeme length: 8
-Identif type: UNSET
-Declaration count 0
-Use count 1
-Used at: line 77 col 29 scope 113
-
--------- Index 8 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: val
-Lexeme length: 3
-Identif type: UNSET
-Declaration count 1
-Declared at: line 40 col 135 scope 102
-Use count 3
-Used at: line 40 col 135 scope 101
-Used at: line 42 col 28 scope 111
-Used at: line 44 col 18 scope 111
-
--------- Index 20 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: write
-Lexeme length: 5
-Identif type: UNSET
-Declaration count 0
-Use count 27
-Used at: line 14 col 399 scope 105
-Used at: line 23 col 90 scope 107
-Used at: line 41 col 24 scope 111
-Used at: line 42 col 24 scope 111
-Used at: line 43 col 24 scope 111
-Used at: line 49 col 24 scope 112
-Used at: line 54 col 21 scope 113
-Used at: line 58 col 379 scope 113
-Used at: line 68 col 268 scope 113
-Used at: line 69 col 315 scope 113
-Used at: line 72 col 122 scope 113
-Used at: line 73 col 226 scope 113
-Used at: line 75 col 24 scope 113
-Used at: line 80 col 28 scope 114
-Used at: line 90 col 24 scope 113
-Used at: line 91 col 24 scope 113
-Used at: line 95 col 140 scope 118
-Used at: line 96 col 28 scope 118
-Used at: line 97 col 147 scope 118
-Used at: line 102 col 223 scope 118
-Used at: line 103 col 28 scope 118
-Used at: line 117 col 32 scope 120
-Used at: line 124 col 36 scope 121
-Used at: line 127 col 32 scope 120
-Used at: line 128 col 32 scope 120
-Used at: line 130 col 28 scope 119
-Used at: line 133 col 85 scope 113
-
--------- Index 28 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: ansStr
-Lexeme length: 6
-Identif type: VARIABLE
-Declaration count 1
-Declared at: line 19 col 65 scope 104
-Use count 4
-Used at: line 19 col 65 scope 104
-Used at: line 20 col 19 scope 104
-Used at: line 21 col 104 scope 104
-Used at: line 20 col 13 scope 104
-Global: false
-VAR type: NUM
-
--------- Index 37 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: Program
-Lexeme length: 7
-Identif type: UNSET
-Declaration count 0
-Use count 1
-Used at: line 2 col 7 scope 0
-
--------- Index 41 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: getAnswer
-Lexeme length: 9
-Identif type: FUNCTION
-PARAM COUNT: [0,1,]
-Declaration count 2
-Declared at: line 4 col 40 scope 1
-Declared at: line 9 col 67 scope 1
-Use count 3
-Used at: line 4 col 40 scope 101
-Used at: line 9 col 76 scope 101
-Used at: line 78 col 28 scope 113
-
--------- Index 44 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: myValue
-Lexeme length: 7
-Identif type: VARIABLE
-Declaration count 1
-Declared at: line 65 col 13 scope 113
-Use count 12
-Used at: line 65 col 13 scope 113
-Used at: line 67 col 181 scope 113
-Used at: line 68 col 276 scope 113
-Used at: line 71 col 16 scope 113
-Used at: line 72 col 130 scope 113
-Used at: line 78 col 16 scope 113
-Used at: line 79 col 107 scope 113
-Used at: line 84 col 24 scope 115
-Used at: line 90 col 32 scope 113
-Used at: line 67 col 174 scope 113
-Used at: line 71 col 9 scope 113
-Used at: line 78 col 9 scope 113
-Global: false
-
--------- Index 46 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: main
-Lexeme length: 4
-Identif type: FUNCTION
-PARAM COUNT: [0,]
-Declaration count 1
-Declared at: line 53 col 38 scope 1
-Use count 1
-Used at: line 53 col 38 scope 101
-
--------- Index 65 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: setter+unicorn
-Lexeme length: 14
-Identif type: SETTER
-Declaration count 1
-Declared at: line 40 col 126 scope 1
-Use count 1
-Used at: line 40 col 126 scope 101
-
--------- Index 74 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: str
-Lexeme length: 3
-Identif type: UNSET
-Declaration count 0
-Use count 2
-Used at: line 20 col 26 scope 104
-Used at: line 100 col 29 scope 118
-
--------- Index 83 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: unicorn
-Lexeme length: 7
-Identif type: FUNCTION
-PARAM COUNT: [0,]
-Declaration count 1
-Declared at: line 48 col 95 scope 1
-Use count 8
-Used at: line 29 col 52 scope 101
-Used at: line 40 col 133 scope 101
-Used at: line 48 col 102 scope 101
-Used at: line 54 col 29 scope 113
-Used at: line 60 col 16 scope 113
-Used at: line 67 col 191 scope 113
-Used at: line 71 col 26 scope 113
-Used at: line 60 col 9 scope 113
-
--------- Index 84 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: __a
-Lexeme length: 3
-Identif type: VARIABLE
-Declaration count 0
-Use count 4
-Used at: line 32 col 155 scope 108
-Used at: line 32 col 155 scope 108
-Used at: line 32 col 155 scope 108
-Used at: line 44 col 9 scope 111
-Global: true
-VAR type: NUM
-
--------- Index 87 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: __d
-Lexeme length: 3
-Identif type: VARIABLE
-Declaration count 0
-Use count 54
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 14 col 389 scope 105
-Used at: line 23 col 75 scope 107
-Used at: line 41 col 9 scope 111
-Used at: line 42 col 9 scope 111
-Used at: line 43 col 9 scope 111
-Used at: line 49 col 9 scope 112
-Used at: line 54 col 6 scope 113
-Used at: line 58 col 363 scope 113
-Used at: line 68 col 253 scope 113
-Used at: line 69 col 300 scope 113
-Used at: line 72 col 107 scope 113
-Used at: line 73 col 211 scope 113
-Used at: line 75 col 9 scope 113
-Used at: line 80 col 13 scope 114
-Used at: line 90 col 9 scope 113
-Used at: line 91 col 9 scope 113
-Used at: line 95 col 125 scope 118
-Used at: line 96 col 13 scope 118
-Used at: line 97 col 132 scope 118
-Used at: line 102 col 208 scope 118
-Used at: line 103 col 13 scope 118
-Used at: line 117 col 17 scope 120
-Used at: line 124 col 21 scope 121
-Used at: line 127 col 17 scope 120
-Used at: line 128 col 17 scope 120
-Used at: line 130 col 13 scope 119
-Used at: line 133 col 70 scope 113
-Global: true
-VAR type: NUM
-
--------- Index 93 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: valueFromUser
-Lexeme length: 13
-Identif type: VARIABLE
-Declaration count 1
-Declared at: line 76 col 13 scope 113
-Use count 10
-Used at: line 76 col 13 scope 113
-Used at: line 77 col 22 scope 113
-Used at: line 78 col 42 scope 113
-Used at: line 94 col 29 scope 113
-Used at: line 96 col 42 scope 118
-Used at: line 98 col 26 scope 118
-Used at: line 98 col 42 scope 118
-Used at: line 100 col 43 scope 118
-Used at: line 77 col 9 scope 113
-Used at: line 98 col 13 scope 118
-Global: false
-VAR type: NUM
-
--------- Index 94 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: x
-Lexeme length: 1
-Identif type: VARIABLE
-Declaration count 3
-Declared at: line 108 col 104 scope 119
-Declared at: line 115 col 373 scope 120
-Declared at: line 122 col 236 scope 121
-Use count 13
-Used at: line 108 col 104 scope 119
-Used at: line 109 col 14 scope 119
-Used at: line 115 col 374 scope 120
-Used at: line 116 col 18 scope 120
-Used at: line 120 col 26 scope 121
-Used at: line 122 col 237 scope 121
-Used at: line 123 col 22 scope 121
-Used at: line 124 col 38 scope 121
-Used at: line 128 col 34 scope 120
-Used at: line 130 col 30 scope 119
-Used at: line 109 col 13 scope 119
-Used at: line 116 col 17 scope 120
-Used at: line 123 col 21 scope 121
-Global: false
-VAR type: STRING
-
--------- Index 95 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: arg
-Lexeme length: 3
-Identif type: UNSET
-Declaration count 1
-Declared at: line 9 col 77 scope 102
-Use count 7
-Used at: line 9 col 77 scope 101
-Used at: line 10 col 16 scope 103
-Used at: line 11 col 93 scope 104
-Used at: line 18 col 16 scope 104
-Used at: line 18 col 22 scope 104
-Used at: line 20 col 33 scope 104
-Used at: line 18 col 13 scope 104
-
--------- Index 96 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: y
-Lexeme length: 1
-Identif type: VARIABLE
-Declaration count 1
-Declared at: line 119 col 25 scope 121
-Use count 4
-Used at: line 119 col 25 scope 121
-Used at: line 120 col 22 scope 121
-Used at: line 123 col 26 scope 121
-Used at: line 120 col 21 scope 121
-Global: false
-
--------- Index 97 --------
-Symbol type: IDENTIFIER
-Symbol lexeme: getter+unicorn
-Lexeme length: 14
-Identif type: GETTER
-Declaration count 1
-Declared at: line 29 col 52 scope 1
-Use count 1
-Used at: line 29 col 52 scope 101
-
-├── GR_CODE_BLOCK
-│   ├── GR_FUN_DECLARATION
-│   │   ├── getAnswer
-│   │   └── GR_CODE_BLOCK
-│   │       └── GR_RETURN
-│   │           └── 42
-│   ├── GR_FUN_DECLARATION
-│   │   ├── getAnswer
-│   │   ├── GR_FUN_PARAM
-│   │   │   └── arg
-│   │   └── GR_CODE_BLOCK
-│   │       └── GR_IF
-│   │           ├── GR_PREDICATE_PARENTH
-│   │           │   └── is
-│   │           │       ├── arg
-│   │           │       └── Num
-│   │           ├── GR_CODE_BLOCK
-│   │           │   ├── GR_IF
-│   │           │   │   ├── GR_PREDICATE_PARENTH
-│   │           │   │   │   └── >
-│   │           │   │   │       ├── -
-│   │           │   │   │       │   ├── arg
-│   │           │   │   │       │   └── 1
-│   │           │   │   │       └── /
-│   │           │   │   │           ├── *
-│   │           │   │   │           │   ├── 32
-│   │           │   │   │           │   └── 84.1
-│   │           │   │   │           └── 2.4
-│   │           │   │   ├── GR_CODE_BLOCK
-│   │           │   │   │   └── GR_ASSIGNMENT
-│   │           │   │   │       ├── __d
-│   │           │   │   │       └── GR_FUN_CALL
-│   │           │   │   │           ├── write
-│   │           │   │   │           └── GR_FUN_PARAM
-│   │           │   │   │               └── "Celkem velke cislo!\n"
-│   │           │   │   └── GR_CODE_BLOCK
-│   │           │   ├── GR_ASSIGNMENT
-│   │           │   │   ├── arg
-│   │           │   │   └── *
-│   │           │   │       ├── arg
-│   │           │   │       └── 42
-│   │           │   ├── GR_DECLARATION
-│   │           │   │   └── ansStr
-│   │           │   ├── GR_ASSIGNMENT
-│   │           │   │   ├── ansStr
-│   │           │   │   └── GR_FUN_CALL
-│   │           │   │       ├── str
-│   │           │   │       └── GR_FUN_PARAM
-│   │           │   │           └── arg
-│   │           │   └── GR_RETURN
-│   │           │       └── +
-│   │           │           ├── "Odpoved je "
-│   │           │           └── ansStr
-│   │           └── GR_CODE_BLOCK
-│   │               ├── GR_ASSIGNMENT
-│   │               │   ├── __d
-│   │               │   └── GR_FUN_CALL
-│   │               │       ├── write
-│   │               │       └── GR_FUN_PARAM
-│   │               │           └── "Neplatny argument\n"
-│   │               └── GR_RETURN
-│   │                   └── null
-│   ├── GR_FUN_DECLARATION
-│   │   ├── getter+unicorn
-│   │   └── GR_GETTER_DECLARATION
-│   │       └── GR_CODE_BLOCK
-│   │           └── GR_IF
-│   │               ├── GR_PREDICATE_PARENTH
-│   │               │   └── __a
-│   │               ├── GR_CODE_BLOCK
-│   │               │   └── GR_RETURN
-│   │               │       └── +
-│   │               │           ├── __a
-│   │               │           └── 10
-│   │               └── GR_CODE_BLOCK
-│   │                   └── GR_RETURN
-│   │                       └── null
-│   ├── GR_FUN_DECLARATION
-│   │   ├── setter+unicorn
-│   │   └── GR_SETTER_DECLARATION
-│   │       ├── val
-│   │       └── GR_CODE_BLOCK
-│   │           ├── GR_ASSIGNMENT
-│   │           │   ├── __d
-│   │           │   └── GR_FUN_CALL
-│   │           │       ├── write
-│   │           │       └── GR_FUN_PARAM
-│   │           │           └── "Jsem jednorozci setter, ziskal jsem "
-│   │           ├── GR_ASSIGNMENT
-│   │           │   ├── __d
-│   │           │   └── GR_FUN_CALL
-│   │           │       ├── write
-│   │           │       └── GR_FUN_PARAM
-│   │           │           └── val
-│   │           ├── GR_ASSIGNMENT
-│   │           │   ├── __d
-│   │           │   └── GR_FUN_CALL
-│   │           │       ├── write
-│   │           │       └── GR_FUN_PARAM
-│   │           │           └── "\n"
-│   │           └── GR_ASSIGNMENT
-│   │               ├── __a
-│   │               └── val
-│   ├── GR_FUN_DECLARATION
-│   │   ├── unicorn
-│   │   └── GR_CODE_BLOCK
-│   │       └── GR_ASSIGNMENT
-│   │           ├── __d
-│   │           └── GR_FUN_CALL
-│   │               ├── write
-│   │               └── GR_FUN_PARAM
-│   │                   └── "Jsem ve funkci unicorn, ne v getteru\n"
-│   └── GR_FUN_DECLARATION
-│       ├── main
-│       └── GR_CODE_BLOCK
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── unicorn
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── "\n"
-│           ├── GR_ASSIGNMENT
-│           │   ├── unicorn
-│           │   └── 5
-│           ├── GR_DECLARATION
-│           │   └── myValue
-│           ├── GR_ASSIGNMENT
-│           │   ├── myValue
-│           │   └── unicorn
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── myValue
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── "\n"
-│           ├── GR_ASSIGNMENT
-│           │   ├── myValue
-│           │   └── GR_FUN_CALL
-│           │       └── unicorn
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── myValue
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── "\n"
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── "Napis cislo:\n"
-│           ├── GR_DECLARATION
-│           │   └── valueFromUser
-│           ├── GR_ASSIGNMENT
-│           │   ├── valueFromUser
-│           │   └── GR_FUN_CALL
-│           │       └── read_num
-│           ├── GR_ASSIGNMENT
-│           │   ├── myValue
-│           │   └── GR_FUN_CALL
-│           │       ├── getAnswer
-│           │       └── GR_FUN_PARAM
-│           │           └── valueFromUser
-│           ├── GR_IF
-│           │   ├── GR_PREDICATE_PARENTH
-│           │   │   └── ==
-│           │   │       ├── myValue
-│           │   │       └── null
-│           │   ├── GR_CODE_BLOCK
-│           │   │   ├── GR_ASSIGNMENT
-│           │   │   │   ├── __d
-│           │   │   │   └── GR_FUN_CALL
-│           │   │   │       ├── write
-│           │   │   │       └── GR_FUN_PARAM
-│           │   │   │           └── "ODPOVED NENI!\n"
-│           │   │   └── GR_RETURN
-│           │   │       └── null
-│           │   └── GR_CODE_BLOCK
-│           │       └── GR_IF
-│           │           ├── GR_PREDICATE_PARENTH
-│           │           │   └── is
-│           │           │       ├── myValue
-│           │           │       └── Null
-│           │           ├── GR_CODE_BLOCK
-│           │           └── GR_CODE_BLOCK
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── myValue
-│           ├── GR_ASSIGNMENT
-│           │   ├── __d
-│           │   └── GR_FUN_CALL
-│           │       ├── write
-│           │       └── GR_FUN_PARAM
-│           │           └── "\n"
-│           ├── GR_DECLARATION
-│           │   └── valStr
-│           ├── GR_WHILE
-│           │   ├── GR_PREDICATE_PARENTH
-│           │   │   └── >
-│           │   │       ├── valueFromUser
-│           │   │       └── -
-│           │   │           ├── 0
-│           │   │           └── 2
-│           │   └── GR_CODE_BLOCK
-│           │       ├── GR_ASSIGNMENT
-│           │       │   ├── __d
-│           │       │   └── GR_FUN_CALL
-│           │       │       ├── write
-│           │       │       └── GR_FUN_PARAM
-│           │       │           └── "Jedeme dolu! "
-│           │       ├── GR_ASSIGNMENT
-│           │       │   ├── __d
-│           │       │   └── GR_FUN_CALL
-│           │       │       ├── write
-│           │       │       └── GR_FUN_PARAM
-│           │       │           └── valueFromUser
-│           │       ├── GR_ASSIGNMENT
-│           │       │   ├── __d
-│           │       │   └── GR_FUN_CALL
-│           │       │       ├── write
-│           │       │       └── GR_FUN_PARAM
-│           │       │           └── " -> "
-│           │       ├── GR_ASSIGNMENT
-│           │       │   ├── valueFromUser
-│           │       │   └── -
-│           │       │       ├── valueFromUser
-│           │       │       └── 1
-│           │       ├── GR_ASSIGNMENT
-│           │       │   ├── valStr
-│           │       │   └── GR_FUN_CALL
-│           │       │       ├── str
-│           │       │       └── GR_FUN_PARAM
-│           │       │           └── valueFromUser
-│           │       ├── GR_ASSIGNMENT
-│           │       │   ├── __d
-│           │       │   └── GR_FUN_CALL
-│           │       │       ├── write
-│           │       │       └── GR_FUN_PARAM
-│           │       │           └── valStr
-│           │       └── GR_ASSIGNMENT
-│           │           ├── __d
-│           │           └── GR_FUN_CALL
-│           │               ├── write
-│           │               └── GR_FUN_PARAM
-│           │                   └── "\n"
-│           ├── GR_CODE_BLOCK
-│           │   ├── GR_DECLARATION
-│           │   │   └── x
-│           │   ├── GR_ASSIGNMENT
-│           │   │   ├── x
-│           │   │   └── 1
-│           │   ├── GR_CODE_BLOCK
-│           │   │   ├── GR_DECLARATION
-│           │   │   │   └── x
-│           │   │   ├── GR_ASSIGNMENT
-│           │   │   │   ├── x
-│           │   │   │   └── "cervena panda + "
-│           │   │   ├── GR_ASSIGNMENT
-│           │   │   │   ├── __d
-│           │   │   │   └── GR_FUN_CALL
-│           │   │   │       ├── write
-│           │   │   │       └── GR_FUN_PARAM
-│           │   │   │           └── "("
-│           │   │   ├── GR_IF
-│           │   │   │   ├── GR_PREDICATE_PARENTH
-│           │   │   │   │   └── ==
-│           │   │   │   │       ├── 1
-│           │   │   │   │       └── 1
-│           │   │   │   ├── GR_CODE_BLOCK
-│           │   │   │   │   ├── GR_DECLARATION
-│           │   │   │   │   │   └── y
-│           │   │   │   │   ├── GR_ASSIGNMENT
-│           │   │   │   │   │   ├── y
-│           │   │   │   │   │   └── *
-│           │   │   │   │   │       ├── x
-│           │   │   │   │   │       └── 3
-│           │   │   │   │   ├── GR_DECLARATION
-│           │   │   │   │   │   └── x
-│           │   │   │   │   ├── GR_ASSIGNMENT
-│           │   │   │   │   │   ├── x
-│           │   │   │   │   │   └── y
-│           │   │   │   │   └── GR_ASSIGNMENT
-│           │   │   │   │       ├── __d
-│           │   │   │   │       └── GR_FUN_CALL
-│           │   │   │   │           ├── write
-│           │   │   │   │           └── GR_FUN_PARAM
-│           │   │   │   │               └── x
-│           │   │   │   └── GR_CODE_BLOCK
-│           │   │   ├── GR_ASSIGNMENT
-│           │   │   │   ├── __d
-│           │   │   │   └── GR_FUN_CALL
-│           │   │   │       ├── write
-│           │   │   │       └── GR_FUN_PARAM
-│           │   │   │           └── "konec) "
-│           │   │   └── GR_ASSIGNMENT
-│           │   │       ├── __d
-│           │   │       └── GR_FUN_CALL
-│           │   │           ├── write
-│           │   │           └── GR_FUN_PARAM
-│           │   │               └── x
-│           │   └── GR_ASSIGNMENT
-│           │       ├── __d
-│           │       └── GR_FUN_CALL
-│           │           ├── write
-│           │           └── GR_FUN_PARAM
-│           │               └── x
-│           └── GR_ASSIGNMENT
-│               ├── __d
-│               └── GR_FUN_CALL
-│                   ├── write
-│                   └── GR_FUN_PARAM
-│                       └── "\n"
 .IFJcode25
 JUMP main
 LABEL getAnswer$0
@@ -835,60 +154,54 @@ POPS GF@__a
 DEFVAR GF@__d
 PUSHS nil@nil
 POPS GF@__d
-PUSHS LF@unicorn$2
+PUSHS string@\010
 CREATEFRAME
 DEFVAR TF@tmp_11
 POPS TF@tmp_11
 WRITE TF@tmp_11
 PUSHS nil@nil
 POPS GF@__d
-PUSHS string@\010
+PUSHS float@0x1.4p+2
+CALL unicorn__
+DEFVAR LF@myValue$113
+CALL unicorn_
+POPS LF@myValue$113
+PUSHS LF@myValue$113
 DEFVAR TF@tmp_12
 POPS TF@tmp_12
 WRITE TF@tmp_12
 PUSHS nil@nil
 POPS GF@__d
-PUSHS float@0x1.4p+2
-CALL unicorn__
-DEFVAR LF@myValue$113
-PUSHS LF@unicorn$2
-POPS LF@myValue$113
-PUSHS LF@myValue$113
+PUSHS string@\010
 DEFVAR TF@tmp_13
 POPS TF@tmp_13
 WRITE TF@tmp_13
 PUSHS nil@nil
 POPS GF@__d
-PUSHS string@\010
+CALL unicorn
+POPS LF@myValue$113
+PUSHS LF@myValue$113
 DEFVAR TF@tmp_14
 POPS TF@tmp_14
 WRITE TF@tmp_14
 PUSHS nil@nil
 POPS GF@__d
-CALL unicorn
-POPS LF@myValue$113
-PUSHS LF@myValue$113
+PUSHS string@\010
 DEFVAR TF@tmp_15
 POPS TF@tmp_15
 WRITE TF@tmp_15
 PUSHS nil@nil
 POPS GF@__d
-PUSHS string@\010
+PUSHS string@Napis\032cislo:\010
 DEFVAR TF@tmp_16
 POPS TF@tmp_16
 WRITE TF@tmp_16
 PUSHS nil@nil
 POPS GF@__d
-PUSHS string@Napis\032cislo:\010
-DEFVAR TF@tmp_17
-POPS TF@tmp_17
-WRITE TF@tmp_17
-PUSHS nil@nil
-POPS GF@__d
 DEFVAR LF@valueFromUser$113
-DEFVAR TF@tmp_18
-READ TF@tmp_18 float
-PUSHS TF@tmp_18
+DEFVAR TF@tmp_17
+READ TF@tmp_17 float
+PUSHS TF@tmp_17
 POPS LF@valueFromUser$113
 PUSHS LF@valueFromUser$113
 CALL getAnswer$1
@@ -896,18 +209,18 @@ POPS LF@myValue$113
 PUSHS LF@myValue$113
 PUSHS nil@nil
 EQS
-DEFVAR TF@tmp_19
-POPS TF@tmp_19
-PUSHS TF@tmp_19
+DEFVAR TF@tmp_18
+POPS TF@tmp_18
+PUSHS TF@tmp_18
 PUSHS nil@nil
 JUMPIFEQS LABEL_6
-PUSHS TF@tmp_19
+PUSHS TF@tmp_18
 PUSHS bool@false
 JUMPIFEQS LABEL_6
 PUSHS string@ODPOVED\032NENI!\010
-DEFVAR TF@tmp_20
-POPS TF@tmp_20
-WRITE TF@tmp_20
+DEFVAR TF@tmp_19
+POPS TF@tmp_19
+WRITE TF@tmp_19
 PUSHS nil@nil
 POPS GF@__d
 PUSHS nil@nil
@@ -918,12 +231,12 @@ LABEL LABEL_6
 PUSHS LF@myValue$113
 PUSHS nil@nil
 EQS
-DEFVAR TF@tmp_21
-POPS TF@tmp_21
-PUSHS TF@tmp_21
+DEFVAR TF@tmp_20
+POPS TF@tmp_20
+PUSHS TF@tmp_20
 PUSHS nil@nil
 JUMPIFEQS LABEL_8
-PUSHS TF@tmp_21
+PUSHS TF@tmp_20
 PUSHS bool@false
 JUMPIFEQS LABEL_8
 JUMP LABEL_9
@@ -931,15 +244,15 @@ LABEL LABEL_8
 LABEL LABEL_9
 LABEL LABEL_7
 PUSHS LF@myValue$113
-DEFVAR TF@tmp_22
-POPS TF@tmp_22
-WRITE TF@tmp_22
+DEFVAR TF@tmp_21
+POPS TF@tmp_21
+WRITE TF@tmp_21
 PUSHS nil@nil
 POPS GF@__d
 PUSHS string@\010
-DEFVAR TF@tmp_23
-POPS TF@tmp_23
-WRITE TF@tmp_23
+DEFVAR TF@tmp_22
+POPS TF@tmp_22
+WRITE TF@tmp_22
 PUSHS nil@nil
 POPS GF@__d
 DEFVAR LF@valStr$113
@@ -953,21 +266,21 @@ GTS
 PUSHS bool@false
 JUMPIFEQS LABEL_11
 PUSHS string@Jedeme\032dolu!\032
+DEFVAR TF@tmp_23
+POPS TF@tmp_23
+WRITE TF@tmp_23
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@valueFromUser$113
 DEFVAR TF@tmp_24
 POPS TF@tmp_24
 WRITE TF@tmp_24
 PUSHS nil@nil
 POPS GF@__d
-PUSHS LF@valueFromUser$113
+PUSHS string@\032->\032
 DEFVAR TF@tmp_25
 POPS TF@tmp_25
 WRITE TF@tmp_25
-PUSHS nil@nil
-POPS GF@__d
-PUSHS string@\032->\032
-DEFVAR TF@tmp_26
-POPS TF@tmp_26
-WRITE TF@tmp_26
 PUSHS nil@nil
 POPS GF@__d
 PUSHS LF@valueFromUser$113
@@ -978,15 +291,15 @@ PUSHS LF@valueFromUser$113
 FLOAT2STRS
 POPS LF@valStr$113
 PUSHS LF@valStr$113
-DEFVAR TF@tmp_27
-POPS TF@tmp_27
-WRITE TF@tmp_27
+DEFVAR TF@tmp_26
+POPS TF@tmp_26
+WRITE TF@tmp_26
 PUSHS nil@nil
 POPS GF@__d
 PUSHS string@\010
-DEFVAR TF@tmp_28
-POPS TF@tmp_28
-WRITE TF@tmp_28
+DEFVAR TF@tmp_27
+POPS TF@tmp_27
+WRITE TF@tmp_27
 PUSHS nil@nil
 POPS GF@__d
 JUMP LABEL_10
@@ -998,77 +311,77 @@ DEFVAR LF@x$120
 PUSHS string@cervena\032panda\032+\032
 POPS LF@x$120
 PUSHS string@(
-DEFVAR TF@tmp_29
-POPS TF@tmp_29
-WRITE TF@tmp_29
+DEFVAR TF@tmp_28
+POPS TF@tmp_28
+WRITE TF@tmp_28
 PUSHS nil@nil
 POPS GF@__d
 PUSHS float@0x1p+0
 PUSHS float@0x1p+0
 EQS
-DEFVAR TF@tmp_30
-POPS TF@tmp_30
-PUSHS TF@tmp_30
+DEFVAR TF@tmp_29
+POPS TF@tmp_29
+PUSHS TF@tmp_29
 PUSHS nil@nil
 JUMPIFEQS LABEL_12
-PUSHS TF@tmp_30
+PUSHS TF@tmp_29
 PUSHS bool@false
 JUMPIFEQS LABEL_12
 DEFVAR LF@y$121
 PUSHS float@0x1.8p+1
 FLOAT2INTS
+DEFVAR TF@tmp_30
 DEFVAR TF@tmp_31
 DEFVAR TF@tmp_32
 DEFVAR TF@tmp_33
 DEFVAR TF@tmp_34
-DEFVAR TF@tmp_35
-POPS TF@tmp_32
-MOVE TF@tmp_31 LF@x$120
-MOVE TF@tmp_33 string@
-MOVE TF@tmp_34 int@0
+POPS TF@tmp_31
+MOVE TF@tmp_30 LF@x$120
+MOVE TF@tmp_32 string@
+MOVE TF@tmp_33 int@0
 LABEL strmul_loop_14
-LT TF@tmp_35 TF@tmp_34 TF@tmp_32
-JUMPIFEQ strmul_end_14 TF@tmp_35 bool@false
-CONCAT TF@tmp_33 TF@tmp_33 TF@tmp_31
-ADD TF@tmp_34 TF@tmp_34 int@1
+LT TF@tmp_34 TF@tmp_33 TF@tmp_31
+JUMPIFEQ strmul_end_14 TF@tmp_34 bool@false
+CONCAT TF@tmp_32 TF@tmp_32 TF@tmp_30
+ADD TF@tmp_33 TF@tmp_33 int@1
 JUMP strmul_loop_14
 LABEL strmul_end_14
-PUSHS TF@tmp_33
+PUSHS TF@tmp_32
 POPS LF@y$121
 DEFVAR LF@x$121
 PUSHS LF@y$121
 POPS LF@x$121
 PUSHS LF@x$121
-DEFVAR TF@tmp_36
-POPS TF@tmp_36
-WRITE TF@tmp_36
+DEFVAR TF@tmp_35
+POPS TF@tmp_35
+WRITE TF@tmp_35
 PUSHS nil@nil
 POPS GF@__d
 JUMP LABEL_13
 LABEL LABEL_12
 LABEL LABEL_13
 PUSHS string@konec)\032
+DEFVAR TF@tmp_36
+POPS TF@tmp_36
+WRITE TF@tmp_36
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@x$120
 DEFVAR TF@tmp_37
 POPS TF@tmp_37
 WRITE TF@tmp_37
 PUSHS nil@nil
 POPS GF@__d
-PUSHS LF@x$120
+PUSHS LF@x$119
 DEFVAR TF@tmp_38
 POPS TF@tmp_38
 WRITE TF@tmp_38
 PUSHS nil@nil
 POPS GF@__d
-PUSHS LF@x$119
+PUSHS string@\010
 DEFVAR TF@tmp_39
 POPS TF@tmp_39
 WRITE TF@tmp_39
-PUSHS nil@nil
-POPS GF@__d
-PUSHS string@\010
-DEFVAR TF@tmp_40
-POPS TF@tmp_40
-WRITE TF@tmp_40
 PUSHS nil@nil
 POPS GF@__d
 POPFRAME
