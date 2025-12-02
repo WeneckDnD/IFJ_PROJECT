@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-# CFLAGS = -Wall -Wextra -pedantic -O2
+CFLAGS = -Wall -Wextra -pedantic
 
 # Automatically collect all .c files in the current directory
 SRC = $(wildcard *.c)

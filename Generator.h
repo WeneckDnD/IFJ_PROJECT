@@ -25,10 +25,6 @@ typedef struct generator {
   bool is_float;
   bool has_return;  // Flag to track if return statement was generated
   bool tf_created;
-  char *buffer;
-  size_t buffer_len;
-  size_t buffer_cap;
-  int buffering;
   int in_while_loop;  // Flag to track if inside while loop body
   char **function_params;  // Array of parameter names for current function
   int function_param_count;  // Number of parameters in current function	
@@ -44,7 +40,6 @@ void generator_free(Generator *generator);
 char *get_next_label(Generator *generator);
 char *get_temp_var(Generator *generator);
 void generator_emit(Generator *generator, const char *format, ...);
-void generator_emit_instruction(Generator *generator, const char *opcode, ...);
 
 // Generovanie pre jednotlivé typy uzlov
 void generate_code_block(Generator *generator, tree_node_t *node);
@@ -58,17 +53,11 @@ void generate_function_call(Generator *generator, tree_node_t *node);
 void generate_if(Generator *generator, tree_node_t *node);
 void generate_while(Generator *generator, tree_node_t *node);
 void generate_return(Generator *generator, tree_node_t *node);
-void generate_exit(Generator *generator, tree_node_t *node);
-void generate_break(Generator *generator, tree_node_t *node);
-void generate_dprint(Generator *generator, tree_node_t *node);
 void generate_terminal(Generator *generator, tree_node_t *node);
 
-void generate_operator(Generator *generator, Token *op_token);
 char **generate_global_vars(Generator *generator);
-// const char *get_operator_instruction(const char *operator);
 
 void generate_strcmp_comparison(Generator *generator, tree_node_t *node);
-void generate_strlen(Generator *generator);
 int diverse_function(Generator *generator, tree_node_t *node);
 
 #endif
