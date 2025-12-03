@@ -2,12 +2,9 @@
 #include "symtable.h"
 #include "tree.h"
 #include "syntactic.h"
-
 #include <stdio.h>
 #include <string.h>
-
 #include "semantic.h"
-
 #include <stdlib.h>
 
 Semantic *init_semantic(Symtable *symtable){

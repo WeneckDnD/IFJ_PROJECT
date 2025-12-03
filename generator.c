@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Generator.h"
+#include "generator.h"
 #include "symbol.h"
 #include "symtable.h"
 #include "token.h"

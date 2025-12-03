@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "symbol.h"
-#include "symtable.h"
 
 
 tree_node_t *tree_create_nonterminal(nonterminal_types nonterminal_type, grammar_rules rule) {

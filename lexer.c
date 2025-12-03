@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
 #include "lexer.h"
 #include "symtable.h"
-#include "syntactic.h"
 #include "token.h"
 
 char *keyword_array[] = {"class", "if", "else", "is", "null", 
