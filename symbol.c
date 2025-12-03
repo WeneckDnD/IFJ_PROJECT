@@ -45,7 +45,6 @@ void symbol_set_var_type(Token *token, Symbol *symbol){
 // INTERFACE FOR LEXER
 
 Symbol *lexer_create_identifier_sym_from_token(Token *token){
-    //puts("ok identif");
     Symbol *symbol = malloc(sizeof(Symbol));
     
     symbol->sym_type = SYM_T_IDENTIFIER;
@@ -71,7 +70,6 @@ Symbol *lexer_create_identifier_sym_from_token(Token *token){
 
 Symbol *lexer_create_global_var_sym_from_token(Token *token){
     Symbol *symbol = malloc(sizeof(Symbol));
-    //puts("ok global");
     symbol->sym_type = SYM_T_IDENTIFIER;
     symbol->sym_identif_type = IDENTIF_T_VARIABLE;
     symbol->is_global = 1;
@@ -88,7 +86,6 @@ Symbol *lexer_create_global_var_sym_from_token(Token *token){
 
 Symbol *lexer_create_num_literal_sym_from_token(Token *token){
     Symbol *symbol = malloc(sizeof(Symbol));
-    //puts("ok num");
     symbol->sym_type = SYM_T_LITERAL;
     symbol->sym_literal_type = LITERAL_T_NUM;
 
@@ -104,7 +101,6 @@ Symbol *lexer_create_num_literal_sym_from_token(Token *token){
 
 Symbol *lexer_create_string_literal_sym_from_token(Token *token){
     Symbol *symbol = malloc(sizeof(Symbol));
-    //puts("ok string");
     symbol->sym_type = SYM_T_LITERAL;
     symbol->sym_literal_type = LITERAL_T_STRING;
 
@@ -121,7 +117,6 @@ Symbol *lexer_create_string_literal_sym_from_token(Token *token){
 // MODIFIERS FOR PARSER
 
 void add_symbol_occurence(Symbol *symbol, int line_number, int col_number, int scope){
-    // puts("REALOKUJEM!!!!!!!!!!!!!");
     symbol->sym_identif_use_count++;
 
     symbol->sym_identif_used_at_line_arr = realloc(symbol->sym_identif_used_at_line_arr, sizeof(int) * symbol->sym_identif_use_count);
@@ -141,7 +136,6 @@ void symbol_add_function_params_count(Symbol *symbol, int number_of_params){
     }
 
     if(symbol->sym_function_number_of_params == NULL){
-        //TODO handle allocation failure
     }
     symbol->sym_function_number_of_params[symbol->sym_identif_declaration_count-1] = number_of_params;
 }
@@ -284,5 +278,4 @@ void print_symbol(Symbol *symbol) {
     }
 
     printf("\n");
-
 }

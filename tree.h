@@ -78,9 +78,9 @@ typedef struct tree_node {
     // General
     int symbol_symtable_index;
     struct tree_node *parent;
-    struct tree_node **children;    /**< Dynamic array of pointers to child nodes. */
-    int children_count;            /**< Number of children in the array. */
-    int children_capacity;         /**< Capacity of the children array. */
+    struct tree_node **children;    
+    int children_count;            
+    int children_capacity;        
 
     grammar_rules rule;
     tree_node_type_t type;

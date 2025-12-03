@@ -44,7 +44,7 @@ Lexer *init_lexer(Symtable *symtable){
     lexer->left_multiline_comment_start_sequence = 0;
 
     return lexer;
-};
+}
 
 #include <stdlib.h>
 
@@ -88,9 +88,7 @@ void extend_lexeme(Lexer *lexer, char currect_char){
     lexer->lexeme = realloc(lexer->lexeme, sizeof(char) * lexer->lexeme_length + 1);
     lexer->lexeme[lexer->lexeme_length - 1] = currect_char;
     lexer->lexeme[lexer->lexeme_length] = '\0';
-    
-    //puts(lexer->lexeme);
-};
+}
 
 void add_token_to_token_table(Lexer *lexer, Token *token){
     lexer->token_count++;
@@ -101,10 +99,7 @@ void add_token_to_token_table(Lexer *lexer, Token *token){
 void print_token_table(Lexer *lexer){
     printf("%i\n", lexer->token_count);
     for(int i = 0; i < lexer->token_count; i++){
-        
-        //if(lexer->token_table[i].token_type == TOKEN_T_){ // DEBUG
-            print_token(&(lexer->token_table[i]));
-        //}
+        print_token(&(lexer->token_table[i]));
     }
 }
 
@@ -118,8 +113,6 @@ Token *get_next_token(Lexer *lexer){
     
     token = &(lexer->token_table[lexer->token_index]);
     lexer->token_index++;
-
-    //printf("TOKEN: %s\n", token->token_lexeme);
 
     return token;
 }
@@ -141,9 +134,6 @@ void read_next_char(Lexer *lexer){
     lexer->current_col++;
 
     if(lexer->current_char == '{'){
-
-        
-
         lexer->scope_index++;
         lexer->max_scope++;
         lexer->scope_id = lexer->max_scope + 100;
@@ -154,14 +144,9 @@ void read_next_char(Lexer *lexer){
             lexer->scope_index - 1);
         
         lexer->scope = lexer->scope_id;
-
-        //print_scope_array(lexer->previous_scope_arr, lexer->scope_index);
-        //printf("Entered scope: %i\n", lexer->scope);
-
     } else if(lexer->current_char == '}'){
         lexer->scope_index--;
         lexer->scope = lexer->previous_scope_arr[lexer->scope_index - 1];
-        //printf("Entered scope: %i\n", lexer->scope);
     }
 
     extend_lexeme(lexer, lexer->current_char);
@@ -274,7 +259,6 @@ int final_state_identif(Lexer *lexer){
         add_symbol_occurence(symbol, lexer->current_row, lexer->current_col, lexer->scope);
     }
     add_token_to_token_table(lexer, token);
-    (lexer->symtable, symbol);
     lexer_start(lexer);
 }
 
@@ -288,9 +272,9 @@ int state_id_start(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
     if(
-        lexer->current_char >= 'a' && lexer->current_char <= 'z' ||
-        lexer->current_char >= 'A' && lexer->current_char <= 'Z' ||
-        lexer->current_char >= '0' && lexer->current_char <= '9' ||
+        (lexer->current_char >= 'a' && lexer->current_char <= 'z' )||
+        (lexer->current_char >= 'A' && lexer->current_char <= 'Z' )||
+        (lexer->current_char >= '0' && lexer->current_char <= '9' )||
         lexer->current_char == '_'
     ) {
         read_next_char(lexer);
@@ -343,9 +327,9 @@ int state_global1(Lexer *lexer){
 int state_global2(Lexer *lexer){
     read_next_char(lexer);
     if(
-        lexer->current_char >= 'a' && lexer->current_char <= 'z' ||
-        lexer->current_char >= 'A' && lexer->current_char <= 'Z' ||
-        lexer->current_char >= '0' && lexer->current_char <= '9' ||
+        (lexer->current_char >= 'a' && lexer->current_char <= 'z' )||
+        (lexer->current_char >= 'A' && lexer->current_char <= 'Z' )||
+        (lexer->current_char >= '0' && lexer->current_char <= '9' )||
         lexer->current_char == '_'
     ) {
         state_global3(lexer);
@@ -360,9 +344,9 @@ int state_global3(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
     if(
-        lexer->current_char >= 'a' && lexer->current_char <= 'z' ||
-        lexer->current_char >= 'A' && lexer->current_char <= 'Z' ||
-        lexer->current_char >= '0' && lexer->current_char <= '9' ||
+        (lexer->current_char >= 'a' && lexer->current_char <= 'z' )||
+        (lexer->current_char >= 'A' && lexer->current_char <= 'Z' )||
+        (lexer->current_char >= '0' && lexer->current_char <= '9' )||
         lexer->current_char == '_'
     ) {
         read_next_char(lexer);
@@ -376,11 +360,9 @@ int state_global3(Lexer *lexer){
 
 int final_state_number(Lexer *lexer){
     Token *token = create_token(TOKEN_T_NUM, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
-    //Symbol *symbol = lexer_create_num_literal_sym_from_token(token);
     add_token_to_token_table(lexer, token);
-    //insert_into_symtable(lexer->symtable, symbol);
     lexer_start(lexer);
-};
+}
 
 int state_zero(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -402,7 +384,7 @@ int state_zero(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_digit(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -424,7 +406,7 @@ int state_digit(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_hex_prefix(Lexer *lexer){
     read_next_char(lexer);
@@ -437,7 +419,7 @@ int state_hex_prefix(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_hex_numba(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -453,7 +435,7 @@ int state_hex_numba(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_dot_arrived(Lexer *lexer){
     read_next_char(lexer);
@@ -463,7 +445,7 @@ int state_dot_arrived(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_decimal_part(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -480,7 +462,7 @@ int state_decimal_part(Lexer *lexer){
         final_state_number(lexer);
     }
     return lexer->error;
-};
+}
 
 int state_exponent_prefix(Lexer *lexer){
     read_next_char(lexer);
@@ -490,7 +472,7 @@ int state_exponent_prefix(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_exponent(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -502,7 +484,7 @@ int state_exponent(Lexer *lexer){
         final_state_number(lexer);
     }
     return lexer->error;
-};
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -516,14 +498,12 @@ int final_state_string(Lexer *lexer){
         state_multiline_string_reading(lexer);
     } else {
         Token *token = create_token(TOKEN_T_STRING, lexer->lexeme, lexer->lexeme_length, lexer->current_row - lexer->newlines_in_multiline, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
-        //Symbol *symbol = lexer_create_string_literal_sym_from_token(token);
         add_token_to_token_table(lexer, token);
-        //insert_into_symtable(lexer->symtable, symbol);
         lexer->newlines_in_multiline = 0;
 
         lexer_start(lexer);
     }
-};
+}
 
 int state_string_reading(Lexer *lexer){
     read_next_char(lexer);
@@ -538,7 +518,7 @@ int state_string_reading(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_special_symbol(Lexer *lexer){
     read_next_char(lexer);
@@ -550,7 +530,7 @@ int state_special_symbol(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_string_hex_prefix(Lexer *lexer){
     read_next_char(lexer);
@@ -563,7 +543,7 @@ int state_string_hex_prefix(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_string_hex_number(Lexer *lexer){
     read_next_char(lexer);
@@ -576,7 +556,7 @@ int state_string_hex_number(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_multiline_string_reading(Lexer *lexer){
     puts("state_multiline_string_reading");
@@ -600,7 +580,7 @@ int state_multiline_string_reading(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_multiline_string1(Lexer *lexer){
     puts("state_multiline_string1");
@@ -611,7 +591,7 @@ int state_multiline_string1(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_multiline_string2(Lexer *lexer){
     puts("state_multiline_string2");
@@ -692,7 +672,7 @@ int state_comment_start(Lexer *lexer){
         final_state_operator(lexer);
     }
     return lexer->error;
-};
+}
 
 int state_comment_reading(Lexer *lexer){
     read_next_char(lexer);

@@ -311,11 +311,10 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
         semantic->scope_counter--;
     }
     // scope safe zone - dobre rata scope odtialto
-    
 
     Symbol *symbol = search_table(tree_node->token, symtable);
     if(symbol) {
-        // ak je terminal
+        // terminal node
         if(tree_node->type == NODE_T_TERMINAL &&
                    tree_node->token &&
                    tree_node->token->token_type == TOKEN_T_IDENTIFIER) {
@@ -336,12 +335,9 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                 return 0;
             }
 
-            // ak je premenna checkni deklaraciu
+            // if identifier, check declaration
             if((symbol->sym_identif_type == IDENTIF_T_VARIABLE || symbol->sym_identif_type == IDENTIF_T_UNSET) && tree_node->parent->rule != GR_DECLARATION
                 && !symbol->is_global){
-                //printf("CHECKED AT: %s %i\n", tree_node->token->token_lexeme, tree_node->token->token_line_number );
-                //print_token(tree_node->token);
-                //print_symtable(semantic->symtable);
 
                 if(tree_node->parent != NULL){
                     if (tree_node->parent->parent != NULL){
@@ -369,7 +365,6 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                 }
 
                 if(symbol->sym_identif_declaration_count == 0){
-                    print_symbol(symbol);
                     semantic->error = 3;
                     return semantic->error;
                 }else {
@@ -380,10 +375,8 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
 
         }
         tree_node_t *parent = tree_node->parent;
-        bool is_in_function = false;
         while(parent != NULL){
             if(parent->rule == GR_FUN_DECLARATION){
-                is_in_function = true;
                 break;
             }
             parent = parent->parent;
@@ -406,13 +399,12 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
                 return semantic->error;
             }
         }else if(symbol->sym_identif_declaration_count > 1 && !symbol->is_parameter){
-            //print_symbol(symbol);
             if(!multiple_declaration_valid(symbol)){
                 semantic->error = 4;
                 return semantic->error;
             }
         }
-    } else { // ak je neterminal
+    } else { // nonterminal node
         if(tree_node->rule == GR_FUN_CALL && tree_node->children_count == 1){
             symbol = search_table(tree_node->children[0]->token,symtable);
             if(symbol == NULL){
@@ -480,6 +472,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
     if(tree_node->rule == GR_CODE_BLOCK){
         semantic->scope_counter--;
     }
+    return 0;
 }
 
 
@@ -511,4 +504,30 @@ bool multiple_declaration_valid(Symbol *symbol){
         }
     }
     return true;
+}
+
+int check_main_function(Symtable *symtable) {
+    // Search through the entire symbol table for 'main'
+    for (int i = 0; i < symtable->symtable_size; i++) {
+        Symbol *sym = symtable->symtable_rows[i].symbol;
+        if (!sym || !sym->sym_lexeme) continue;
+
+        // Check if this is 'main'
+        if (strcmp(sym->sym_lexeme, "main") == 0) {
+            if (sym->sym_identif_type != IDENTIF_T_FUNCTION) {
+                continue; 
+            }
+
+            // Check if any declaration has 0 parameters
+            for (int j = 0; j < sym->sym_identif_declaration_count; j++) {
+                if (sym->sym_function_number_of_params[j] == 0) {
+                    return 0; // Found main() with 0 parameters
+                }
+            }
+            
+            return 3; 
+        }
+    }
+
+    return 3; 
 }

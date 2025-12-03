@@ -123,8 +123,6 @@ Symbol *search_table(Token *token, Symtable *symtable) {
 
         for(int j = 0; j < token->scope_count; j++){
             if (strcmp(sym->sym_lexeme, token->token_lexeme) == 0 && token->previous_scope_arr[j] == token->scope) {
-                
-                //puts("BEN");
                 return sym;
             }
         }
@@ -148,19 +146,17 @@ Symbol *search_table_for_setter_or_getter(Token *token, Symtable *symtable) {
 }
 
 int identif_declared_at_least_once(Token *token, Symtable *symtable, bool is_param){
-    //puts("TUSEM");
     for (int i = 0; i < symtable->symtable_size; i++) {
         Symbol *sym = symtable->symtable_rows[i].symbol;
         if (!sym || !sym->sym_lexeme) continue;
 
-        // ak sa zhoduje lexema
+        // lexeme matches
         if (strcmp(sym->sym_lexeme, token->token_lexeme) == 0) {
             if (is_param) {
                 return 1;
             }
-            //printf("COMPARING: %s       %s\n", sym->token->token_lexeme, token->token_lexeme);
 
-            // pozri ci symbol bol aspon raz deklaroveny v predoslych scopeoch
+            // check if symbol was previously declared in previous scopes
             for(int j = token->scope_count - 1; j >= 0 ; j--){
                 for(int k = 0; k < sym->sym_identif_declaration_count; k++){
                     if(token->previous_scope_arr[j] == sym->sym_identif_declared_at_scope_arr[k]){
@@ -168,9 +164,6 @@ int identif_declared_at_least_once(Token *token, Symtable *symtable, bool is_par
                     }
                 }
             }
-
-
-            //puts("BEN");
         }
     }
 
@@ -201,32 +194,6 @@ void symtable_add_declaration_info(Symbol *symbol, int line, int col, int scope)
     symbol->sym_identif_declared_at_scope_arr[idx] = scope;
 }
 
-/*void add_function_param(Symbol *symbol, Token *token) {
-    symbol->sym_function_number_of_params++;
-
-    symbol->sym_function_param_names = realloc(
-        symbol->sym_function_param_names,
-        sizeof(char *) * symbol->sym_function_number_of_params
-    );
-
-    symbol->sym_function_param_types = realloc(
-        symbol->sym_function_param_types,
-        sizeof(SYMBOL_TYPE) * symbol->sym_function_number_of_params
-    );
-
-    int idx = symbol->sym_function_number_of_params - 1;
-
-    symbol->sym_function_param_names[idx] = strdup(token->token_lexeme);
-
-    if(token->token_type == TOKEN_T_IDENTIFIER){
-        symbol->sym_function_param_types[idx] = SYM_T_IDENTIFIER;
-    }
-
-    if(token->token_type == TOKEN_T_NUM || token->token_type == TOKEN_T_STRING){
-        symbol->sym_function_param_types[idx] = SYM_T_LITERAL;
-    }
-     
-}*/
 Symbol *search_table_in_scope_hierarchy(Token *token, Symtable *symtable) {
     // First try exact scope match
     Symbol *result = search_table(token, symtable);

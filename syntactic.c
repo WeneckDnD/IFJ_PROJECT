@@ -15,13 +15,8 @@ Syntactic *init_syntactic(Symtable *symtable){
     }
 
     syntactic->symtable = symtable;
-
     syntactic->scope_counter = 0;
-    
     syntactic->fn_number_of_params = 0;
-    //print_symtable(syntactic->symtable);
-    //print_symbol(syntactic->symtable->symtable_rows[93].symbol);
-
     tree_init(&syntactic->tree);
 
     syntactic->error = 0;
@@ -30,14 +25,12 @@ Syntactic *init_syntactic(Symtable *symtable){
 }
 
 int syntactic_start(Syntactic *syntactic, Lexer *lexer){
-    // puts("rule_start");
     rule_check_skeleton_1(syntactic, lexer);
     return syntactic->error;
 }
 
 // returns 1 on succes
 int assert_expected_literal(Syntactic *syntactic, Token* token, char *literal){
-    // printf("Assert: %s %s %i %i\n", token->token_lexeme, literal, token->token_line_number, syntactic->error);
     if (!token) { syntactic->error = ERR_T_SYNTAX_ERR; return 0; };
     if(strcmp(token->token_lexeme, literal) != 0){
         syntactic->error = ERR_T_SYNTAX_ERR;
@@ -47,8 +40,6 @@ int assert_expected_literal(Syntactic *syntactic, Token* token, char *literal){
 }
 
 int rule_check_skeleton_1(Syntactic *syntactic, Lexer *lexer){
-    // puts("rule_check_skeleton_1");
-
     Token *token = get_next_token(lexer);
     if (!token) { syntactic->error = ERR_T_SYNTAX_ERR; return syntactic->error = ERR_T_SYNTAX_ERR; };
     if(strcmp(token->token_lexeme, "import") != 0){
@@ -92,8 +83,6 @@ int rule_check_skeleton_1(Syntactic *syntactic, Lexer *lexer){
 }
 
 int rule_check_skeleton_2(Syntactic *syntactic, Lexer *lexer){
-    // puts("rule_check_skeleton_2");
-
     Token *token = get_next_token(lexer);
     if (!token) { syntactic->error = ERR_T_SYNTAX_ERR; return syntactic->error = ERR_T_SYNTAX_ERR; };
     if(strcmp(token->token_lexeme, "class") != 0){
@@ -117,7 +106,6 @@ int rule_check_skeleton_2(Syntactic *syntactic, Lexer *lexer){
 }
 
 int rule_code_block(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_code_block");
     tree_node_t *rule_code_block_node = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
 
     // increase scope
@@ -129,25 +117,17 @@ int rule_code_block(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
         return syntactic->error;
     }
 
-    //tree_node_t *left_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_code_block_node, left_br_node);
-
     current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "\n")){
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
 
-    //tree_node_t *eol_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_code_block_node, eol_node);
-
     if(syntactic->error != 0){
         return syntactic->error;
     }
 
-    //tree_node_t *rule_sequence_node = tree_create_nonterminal(NONTERMINAL_T_SEQUENCE, GR_SEQUENCE);
     rule_sequence(syntactic, lexer, rule_code_block_node);
-    //tree_insert_child(rule_code_block_node, rule_sequence_node);
 
     if(syntactic->error != 0) return syntactic->error;
 
@@ -157,9 +137,6 @@ int rule_code_block(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    //tree_node_t *right_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_code_block_node, right_br_node);
 
     if(syntactic->error != 0){
         return syntactic->error;
@@ -212,31 +189,20 @@ int rule_sequence(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
             syntactic->error = ERR_T_SYNTAX_ERR;
             return syntactic->error;
         }
-        //tree_node_t *eol_node = tree_create_terminal(t);
-        //tree_insert_child(rule_sequence_node, eol_node);
     }
     // Handle INSTRUCTION
     else if (is_instruction_start(lookahead_token)) {
-        //tree_node_t *rule_instruction_node = tree_create_nonterminal(NONTERMINAL_T_INSTRUCTION, GR_INSTRUCTION_DECLARATION);
         rule_instruction(syntactic, lexer, rule_sequence_node);
-        //tree_insert_child(rule_sequence_node, rule_instruction_node);
 
         if (syntactic->error != 0)
             return syntactic->error;
     }
 
-
-    //tree_node_t *rule_sequence_prime_node = tree_create_nonterminal(NONTERMINAL_T_SEQUENCE, GR_SEQUENCE_2);
-    // Parse the rest of the sequence (recursive part)
     rule_sequence_prime(syntactic, lexer, rule_sequence_node);
-    //tree_insert_child(rule_sequence_node, rule_sequence_prime_node);
 
-
-    //tree_insert_child(node, rule_sequence_node);
     return syntactic->error;
 }
 int rule_sequence_prime(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
-    // puts("rule_sequence_prime");
     tree_node_t *rule_sequence_prime_node = node;
 
     Token *lookahead_token = get_lookahead_token(lexer);
@@ -252,14 +218,10 @@ int rule_sequence_prime(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
     // Handle <EOL>
     if (lookahead_token->token_type == TOKEN_T_EOL) {
         Token *t = get_next_token(lexer); // consume newline
-        // puts("BEFORE");
         if (!t) {
             syntactic->error = ERR_T_SYNTAX_ERR;
             return syntactic->error;
         }
-        // puts("AFTA");
-        //tree_node_t *eol_node = tree_create_terminal(t);
-        //tree_insert_child(rule_sequence_prime_node, eol_node);
     }
     // Handle INSTRUCTION
     else if (is_instruction_start(lookahead_token)) {
@@ -268,68 +230,45 @@ int rule_sequence_prime(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
             return syntactic->error;
     }
 
-
-
     rule_sequence_prime(syntactic, lexer, rule_sequence_prime_node);
 
-    //tree_insert_child(node, rule_sequence_prime_node);
     return syntactic->error;
 }
 
 int rule_instruction(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_instruction");
     tree_node_t *rule_instruction_node = node;
-    //printf("chyba: %i\n", syntactic->error);
     Token *lookahead_token = get_lookahead_token(lexer);
     if (!lookahead_token) { syntactic->error = ERR_T_SYNTAX_ERR; return syntactic->error = ERR_T_SYNTAX_ERR; };
 
-    //tree_node_t *instruction_node;
-
     if(strcmp(lookahead_token->token_lexeme, "return") == 0){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_RETURN, GR_RETURN);
         rule_return(syntactic, lexer, rule_instruction_node);
     } else if(strcmp(lookahead_token->token_lexeme, "if") == 0){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_IF, GR_IF);
         rule_if(syntactic, lexer, rule_instruction_node);
     } else if(strcmp(lookahead_token->token_lexeme, "while") == 0){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_WHILE, GR_WHILE);
         rule_while(syntactic, lexer, rule_instruction_node);
     } else if(strcmp(lookahead_token->token_lexeme, "var") == 0){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_DECLARATION);
         rule_declaration(syntactic, lexer, rule_instruction_node);
     } else if(lookahead_token->token_type == TOKEN_T_IDENTIFIER || lookahead_token->token_type == TOKEN_T_GLOBAL_VAR){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_ASSIGNMENT, GR_ASSIGNMENT);
         rule_assignment(syntactic, lexer, rule_instruction_node);
     } else if(strcmp(lookahead_token->token_lexeme, "static") == 0){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_DECLARATION);
         syntactic->fn_number_of_params = 0;
         rule_function_declaration_begin(syntactic, lexer, rule_instruction_node);
     } else if(strcmp(lookahead_token->token_lexeme, "{") == 0){
-        //instruction_node = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
         rule_code_block(syntactic, lexer, rule_instruction_node);
     } else {
         syntactic->error = ERR_T_SYNTAX_ERR;
     }
 
-    //tree_insert_child(rule_instruction_node, instruction_node);
-    //tree_insert_child(node, rule_instruction_node);
-
-    //if(syntactic->error != 0) return syntactic->error;
-
     return syntactic->error;
 }
 
 int rule_return(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_return");
     tree_node_t *rule_return_node = tree_create_nonterminal(NONTERMINAL_T_RETURN, GR_RETURN);
 
     Token *current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "return")){
         return syntactic->error;
     }
-
-    //tree_node_t *return_node = tree_create_terminal(current_token);
-
 
     // ZA RETURN NEMUSI BYT NIC
     Token *lookahead = get_lookahead_token(lexer);
@@ -340,7 +279,6 @@ int rule_return(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
     tree_node_t *rule_exp_node = rule_expression(syntactic, lexer);
     if(syntactic->error != 0) return syntactic->error;
 
-    //tree_insert_child(rule_return_node, return_node);
     tree_insert_child(rule_return_node, rule_exp_node);
 
     tree_insert_child(node, rule_return_node);
@@ -350,26 +288,17 @@ int rule_return(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 }
 
 int rule_if(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_if");
     tree_node_t *rule_if_node = tree_create_nonterminal(NONTERMINAL_T_IF, GR_IF);
 
     Token *current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "if")){
         return syntactic->error;
     }
-
-    //tree_node_t *if_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_if_node, if_node);
-
     current_token = get_next_token(lexer);
-    //// puts("ASSERTUJEM IFKO (");
+
     if(!assert_expected_literal(syntactic, current_token, "(")){
         return syntactic->error;
     }
-
-    //tree_node_t *left_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_if_node, left_br_node);
-
 
     tree_node_t *rule_predicate_node = tree_create_nonterminal(NONTERMINAL_T_PREDICATE, GR_PREDICATE_PARENTH);
     tree_node_t *preditace = rule_predicate(syntactic, lexer);
@@ -384,29 +313,18 @@ int rule_if(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
         return syntactic->error;
     }
 
-    //tree_node_t *right_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_if_node, right_br_node);
-
-    //tree_node_t *rule_code_block_node = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
     rule_code_block(syntactic, lexer, rule_if_node);
-    //tree_insert_child(rule_if_node, rule_code_block_node);
     
     if(syntactic->error != 0) return syntactic->error;
 
     current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "else")){
-        //// puts("else assert");
         return syntactic->error;
     }
 
-    //tree_node_t *else_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_if_node, else_node);
-
-    //tree_node_t *rule_code_block_node_2 = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
     rule_code_block(syntactic, lexer, rule_if_node);
-    //tree_insert_child(rule_if_node, rule_code_block_node_2);
-    if(syntactic->error != 0) return syntactic->error;
 
+    if(syntactic->error != 0) return syntactic->error;
 
     tree_insert_child(node, rule_if_node);
 
@@ -414,26 +332,16 @@ int rule_if(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 }
 
 int rule_while(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_while");
     tree_node_t *rule_while_node = tree_create_nonterminal(NONTERMINAL_T_WHILE, GR_WHILE);
 
     Token *current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "while")){
         return syntactic->error;
     }
-
-    //tree_node_t *while_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_while_node, while_node);
-
     current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "(")){
         return syntactic->error;
     }
-
-    //tree_node_t *left_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_while_node, left_br_node);
-
-
 
     tree_node_t *rule_predicate_node = tree_create_nonterminal(NONTERMINAL_T_PREDICATE, GR_PREDICATE_PARENTH);
     tree_node_t *preditace = rule_predicate(syntactic, lexer);
@@ -446,13 +354,7 @@ int rule_while(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
     if(!assert_expected_literal(syntactic, current_token, ")")){
         return syntactic->error;
     }
-
-    //tree_node_t *right_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_while_node, right_br_node);
-
-    //tree_node_t *rule_code_block_node = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
     rule_code_block(syntactic, lexer, rule_while_node);
-    //tree_insert_child(rule_while_node, rule_code_block_node);
     if(syntactic->error != 0) return syntactic->error;
 
     tree_insert_child(node, rule_while_node);
@@ -461,20 +363,12 @@ int rule_while(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 }
 
 int rule_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_declaration");
     tree_node_t *rule_declaration_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_DECLARATION);
-
-    
-
     // assert var
     Token *current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "var")){
         return syntactic->error;
     }
-
-    //tree_node_t *var_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_declaration_node, var_node);
-
     // assert identif
     current_token = get_next_token(lexer);
     if (!current_token) { syntactic->error = ERR_T_SYNTAX_ERR; return syntactic->error = ERR_T_SYNTAX_ERR; };
@@ -489,8 +383,7 @@ int rule_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 
     // HOTFIX
     lexer->scope = syntactic->scope_counter;
-    Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
-    
+
     // update symbol table
     Symbol *symbol = search_table(current_token, syntactic->symtable);
     symbol->sym_identif_type = IDENTIF_T_VARIABLE;
@@ -502,21 +395,12 @@ int rule_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 }
 
 int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
-    // puts("rule_allowed_eol");
-
-    tree_node_t *rule_oel_node = node;
-
     Token *current_token = get_next_token(lexer);
 
-    // Expect comma or operator
     if (strcmp(current_token->token_lexeme, ",") != 0 && current_token->token_type != TOKEN_T_OPERATOR) {
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    //tree_node_t *comma_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_oel_node, comma_node);
-
     // Allow one or more newlines after
     current_token = get_lookahead_token(lexer); // peek to see if there's a newline next
     if (strcmp(current_token->token_lexeme, "\n") != 0) {
@@ -525,19 +409,14 @@ int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
 
     // Consume all consecutive newlines
     do {
-        //tree_node_t *comma_node_2 = tree_create_terminal(get_next_token(lexer));
-        //tree_insert_child(rule_oel_node, comma_node);
         current_token = get_lookahead_token(lexer);
     } while (strcmp(current_token->token_lexeme, "\n") == 0);
-
-    //tree_insert_child(node, rule_oel_node);
 
     return syntactic->error;
 }
 
 
 int rule_assignment(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_assignment");
     tree_node_t *rule_assignment_node = tree_create_nonterminal(NONTERMINAL_T_ASSIGNMENT, GR_ASSIGNMENT);
 
     Token *current_token = get_next_token(lexer);
@@ -562,10 +441,6 @@ int rule_assignment(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
         syntactic->error = ERR_T_SYNTAX_ERR; 
         return syntactic->error;
     }
-
-    //tree_node_t *eq_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_assignment_node, eq_node);
-
     symbol_to_update = search_table(identif_token_to_be_updated, syntactic->symtable); // identif
     if(!symbol_to_update) puts ("NUKLL");
 
@@ -578,14 +453,12 @@ int rule_assignment(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
     
     if(syntactic->error != 0) return syntactic->error;
 
-    
     tree_insert_child(node, rule_assignment_node);
 
     return syntactic->error;
 }
 
 int rule_expression_or_function(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_expression_or_function");
     tree_node_t *rule_expression_or_fn_node = node;
 
     Token *current_token = get_next_token(lexer);
@@ -595,31 +468,21 @@ int rule_expression_or_function(Syntactic *syntactic, Lexer *lexer, tree_node_t 
     
     lexer->token_index--;
 
-    //print_token(current_token);
-    //print_token(lookahead_token);
-
     if(current_token->token_type == TOKEN_T_STRING || current_token->token_type == TOKEN_T_NUM || current_token->token_type == TOKEN_T_GLOBAL_VAR){
         tree_node_t *exp_node = rule_expression(syntactic, lexer);
         tree_insert_child(rule_expression_or_fn_node, exp_node);
         if(syntactic->error != 0) return syntactic->error;
     } else {
         if (strcmp(lookahead_token->token_lexeme, "(") == 0 || strcmp(lookahead_token->token_lexeme, ".") == 0) {
-            //// puts("FNCALL");
-            //tree_node_t *fn_node = tree_create_nonterminal(NONTERMINAL_T_FUN_CALL, GR_FUN_CALL);
             rule_function_call(syntactic, lexer, rule_expression_or_fn_node);
-            //tree_insert_child(rule_expression_or_fn_node, fn_node);
             if(syntactic->error != 0) return syntactic->error;
         }
         else {
-            //// puts("EXP");
             tree_node_t *exp_node = rule_expression(syntactic, lexer);
             tree_insert_child(rule_expression_or_fn_node, exp_node);
             if(syntactic->error != 0) return syntactic->error;
         }
     }
-
-
-    //tree_insert_child(node, rule_expression_or_fn_node);
 
     return syntactic->error;
 }
@@ -671,10 +534,8 @@ void add_prefix_to_symbol(Symbol *symbol, char *prefix) {
 }
 
 int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_fn_dec_begin");
     tree_node_t *rule_fn_dec_begin_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_FUN_DECLARATION);
 
-    //printf("chyba: %i\n", syntactic->error);
     Token *current_token = get_next_token(lexer);
     if (!current_token) { syntactic->error = ERR_T_SYNTAX_ERR; return syntactic->error = ERR_T_SYNTAX_ERR; };
 
@@ -682,10 +543,6 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    //tree_node_t *static_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_fn_dec_begin_node, static_node);
-
     current_token = get_next_token(lexer);
     if(current_token->token_type != TOKEN_T_IDENTIFIER ){
         syntactic->error = ERR_T_SYNTAX_ERR;
@@ -696,13 +553,8 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
     tree_node_t *identif_node = tree_create_terminal(current_token);
     tree_insert_child(rule_fn_dec_begin_node, identif_node);
 
-    //// puts("tusmo");
-
     Token *lookahead_token = get_lookahead_token(lexer);
     if (!lookahead_token) { syntactic->error = ERR_T_SYNTAX_ERR; return syntactic->error = ERR_T_SYNTAX_ERR; };
-
-    //tree_node_t *rule_fn_dec_type_node;
-
 
     // function
     if(strcmp(lookahead_token->token_lexeme, "(") == 0){
@@ -785,17 +637,13 @@ int rule_function_declaration_begin(Syntactic *syntactic, Lexer *lexer, tree_nod
 
         rule_getter_declaration(syntactic, lexer, rule_fn_dec_begin_node);
     }
-    
-
 
     tree_insert_child(node, rule_fn_dec_begin_node);
 
     return syntactic->error;
-
 }
 
 int rule_function_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_fn_dec");
     tree_node_t *rule_function_declaration_node = node;
 
     Token *current_token = get_next_token(lexer);
@@ -855,18 +703,8 @@ int rule_function_call(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
             syntactic->error = ERR_T_SYNTAX_ERR;
             return syntactic->error;
         }
-
-        //tree_node_t *right_br_node = tree_create_terminal(current_token);
-        //tree_insert_child(rule_function_call_node, right_br_node);
-
     } else if (strcmp(current_token->token_lexeme, "Ifj") == 0){
-        
-        //tree_node_t *ifj_node = tree_create_terminal(current_token);
-        //tree_insert_child(rule_function_call_node, ifj_node);
-
-        //tree_node_t *eol_node = tree_create_nonterminal(NONTERMINAL_T_ALLOWED_EOL, GR_ALLOWED_EOL);
         rule_allowed_eol(syntactic, lexer, rule_function_call_node);
-        //tree_insert_child(rule_function_call_node, eol_node);
 
         if(syntactic->error != 0) return syntactic->error;
 
@@ -884,14 +722,8 @@ int rule_function_call(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
             syntactic->error = ERR_T_SYNTAX_ERR;
             return syntactic->error;
         }
-
-        //tree_node_t *left_br_node_1 = tree_create_terminal(current_token);
-        //tree_insert_child(rule_function_call_node, left_br_node_1);
-
-        ///tree_node_t *function_parameters_node = tree_create_nonterminal(NONTERMINAL_T_FUN_PARAM, GR_FUN_PARAM);
-        
+       
         rule_function_parameters(syntactic, lexer, rule_function_call_node, false);
-        //tree_insert_child(rule_function_call_node, function_parameters_node);
 
         if(syntactic->error != 0) return syntactic->error;
 
@@ -900,10 +732,6 @@ int rule_function_call(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
             syntactic->error = ERR_T_SYNTAX_ERR;
             return syntactic->error;
         }
-
-        //tree_node_t *right_br_node_1 = tree_create_terminal(current_token);
-        //tree_insert_child(rule_function_call_node, right_br_node_1);
-
     }
 
 
@@ -933,13 +761,12 @@ int rule_function_parameters(Syntactic *syntactic, Lexer *lexer, tree_node_t *no
         tree_insert_child(rule_function_parameters_node, str_node);
 
         if(is_declaration){
-            //print_symbol(symbol);
             symtable_add_declaration_info(symbol, t->token_line_number, t->token_col_number, syntactic->scope_counter+101);
             symbol->is_parameter = true;
         }
     }
     
-    else { // ak je to string tak ho skonzumuj
+    else { //consume if string
         Token *t = get_next_token(lexer);
 
         tree_node_t *str_node = tree_create_terminal(t);
@@ -947,10 +774,7 @@ int rule_function_parameters(Syntactic *syntactic, Lexer *lexer, tree_node_t *no
     }
 
     syntactic->fn_number_of_params++;
-    //tree_node_t *params_prime_node = tree_create_nonterminal(NONTERMINAL_T_FUN_PARAM, GR_FUN_PARAM);
     rule_function_parameters_prime(syntactic, lexer, rule_function_parameters_node, is_declaration);
-    //tree_insert_child(rule_function_parameters_node, params_prime_node);
-
 
     tree_insert_child(node, rule_function_parameters_node);
 
@@ -958,7 +782,6 @@ int rule_function_parameters(Syntactic *syntactic, Lexer *lexer, tree_node_t *no
 }
 
 int rule_function_parameters_prime(Syntactic *syntactic, Lexer *lexer, tree_node_t *node, bool is_declaration) {
-    // puts("rule_fn_params_prime");
     tree_node_t *rule_function_params_prime_node = node;
 
     Token *lookahead_token = get_lookahead_token(lexer);
@@ -967,9 +790,7 @@ int rule_function_parameters_prime(Syntactic *syntactic, Lexer *lexer, tree_node
         return syntactic->error;
     }
 
-    //tree_node_t *eol_node = tree_create_nonterminal(NONTERMINAL_T_ALLOWED_EOL, GR_ALLOWED_EOL);
     rule_allowed_eol(syntactic, lexer, rule_function_params_prime_node);
-    //tree_insert_child(rule_function_params_prime_node, eol_node);
 
     // uz je v allowed_eol vynutena ciarka
 
@@ -986,22 +807,15 @@ int rule_function_parameters_prime(Syntactic *syntactic, Lexer *lexer, tree_node
 
     syntactic->fn_number_of_params++;
     // Recurse for more parameters
-    //tree_node_t *rule_function_params_prime_node_2 = tree_create_nonterminal(NONTERMINAL_T_FUN_PARAM, GR_FUN_PARAM);
     rule_function_parameters_prime(syntactic, lexer, rule_function_params_prime_node, is_declaration);
-    //tree_insert_child(rule_function_params_prime_node, rule_function_params_prime_node_2);
-
-    //tree_insert_child(node, rule_function_params_prime_node);
 
     return syntactic->error;
 }
 
 int rule_getter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_getter_dec");
     tree_node_t *rule_getter_declaration_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_GETTER_DECLARATION);
 
-    //tree_node_t *code_block_node = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
     rule_code_block(syntactic, lexer, rule_getter_declaration_node);
-    //tree_insert_child(rule_getter_declaration_node, code_block_node);
 
     if(syntactic->error != 0) return syntactic->error;
 
@@ -1010,17 +824,12 @@ int rule_getter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *nod
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    //tree_node_t *newline_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_getter_declaration_node, newline_node);
-
     tree_insert_child(node, rule_getter_declaration_node);
 
     return syntactic->error;
 }
 
 int rule_setter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
-    // puts("rule_setter_dec");
     tree_node_t *rule_setter_declaration_node = tree_create_nonterminal(NONTERMINAL_T_DECLARATION, GR_SETTER_DECLARATION);
 
     Token *current_token = get_next_token(lexer);
@@ -1028,21 +837,12 @@ int rule_setter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *nod
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    //tree_node_t *eq_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_setter_declaration_node, eq_node);
-
     current_token = get_next_token(lexer);
     if(!assert_expected_literal(syntactic, current_token, "(")){
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    ///tree_node_t *left_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_setter_declaration_node, left_br_node);
-
     current_token = get_next_token(lexer);
-    //print_token(current_token);
     if(current_token->token_type != TOKEN_T_IDENTIFIER){
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
@@ -1063,14 +863,7 @@ int rule_setter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *nod
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-    //tree_node_t *right_br_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_setter_declaration_node, right_br_node);
-
-
-   // tree_node_t *code_block_node = tree_create_nonterminal(NONTERMINAL_T_CODE_BLOCK, GR_CODE_BLOCK);
     rule_code_block(syntactic, lexer, rule_setter_declaration_node);
-    //tree_insert_child(rule_setter_declaration_node, code_block_node);
 
     if(syntactic->error != 0) return syntactic->error;
     
@@ -1079,15 +872,9 @@ int rule_setter_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *nod
         syntactic->error = ERR_T_SYNTAX_ERR;
         return syntactic->error;
     }
-
-   // tree_node_t *newl_node = tree_create_terminal(current_token);
-    //tree_insert_child(rule_setter_declaration_node, newl_node);
-
-
     tree_insert_child(node, rule_setter_declaration_node);
 
     return syntactic->error;
-
 }
 
 int is_binary_operator(Token *token){
@@ -1137,7 +924,7 @@ tree_node_t *rule_expression_1(tree_node_t *lhs, int min_precedence, Syntactic *
 
     while (is_binary_operator(lookahead) && get_operator_precedence(lookahead) >= min_precedence) {
         Token *op = lookahead;
-        get_next_token(lexer); // SKONZUMUJES OPERATOR
+        get_next_token(lexer); // consume operator
 
         tree_node_t *rhs = rule_parse_primary(syntactic, lexer); 
         
@@ -1159,8 +946,6 @@ tree_node_t *rule_expression_1(tree_node_t *lhs, int min_precedence, Syntactic *
             lookahead = get_lookahead_token(lexer);
         }
 
-        //
-
         // ---------------------------------------------------
 
         tree_node_t *node_op;
@@ -1179,7 +964,6 @@ tree_node_t *rule_expression_1(tree_node_t *lhs, int min_precedence, Syntactic *
 }
 
 tree_node_t *rule_parse_primary(Syntactic *syntactic, Lexer *lexer) {
-    // puts("rule_parse_primary");
     Token *current_token = get_next_token(lexer);
 
     tree_node_t *root;
@@ -1218,7 +1002,6 @@ tree_node_t *rule_parse_primary(Syntactic *syntactic, Lexer *lexer) {
         tree_node_t *expr_node;
         tree_init(&expr_node);
         expr_node->token = get_next_token(lexer);
-        //if(expr_node->token) // puts("NO NULL");
 
         tree_insert_child(unary_node, expr_node);
 
@@ -1234,10 +1017,7 @@ tree_node_t *rule_parse_primary(Syntactic *syntactic, Lexer *lexer) {
 
 
 tree_node_t *rule_predicate(Syntactic *syntactic, Lexer *lexer){
-    // puts("rule_predicate");
-
     tree_node_t *n = rule_expression(syntactic, lexer);
-
     return n;
 
 }

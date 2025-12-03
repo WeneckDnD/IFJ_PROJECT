@@ -83,8 +83,6 @@ char *grammar_rule_to_string(grammar_rules rule) {
     }
 }
 
-
-
 /**
  * @brief Initialize a tree to empty (NULL).
  */
@@ -238,41 +236,6 @@ void tree_delete(tree_node_t **tree, int index) {
  * @param tree Pointer to the current node of the tree.
  * @param depth Current recursion depth; use 0 when calling from main.
  */
-/*
-void tree_print_tree(tree_node_t *tree, int depth) {
-    if (tree == NULL) {
-        return;
-    }
-
-    // Print indentation spaces
-    for (int i = 0; i < depth; i++) {
-        printf("    ");
-    }
-    
-    // Print node info based on type
-    if (tree->type == NODE_T_NONTERMINAL) {
-        // Print nonterminal type or rule (enum values as int for simplicity)
-        printf("(NonTerm:%d", tree->nonterm_type);
-        // Optionally print grammar rule enum
-        // printf(" R:%d", tree->rule);
-    } else {
-        // Terminal node: print symbol or token lexeme
-        if (tree->symbol && tree->symbol->sym_lexeme) {
-            printf("(%s", tree->symbol->sym_lexeme);
-        } else if (tree->token && tree->token->token_lexeme) {
-            printf("(%s", tree->token->token_lexeme);
-        } else {
-            printf("(Terminal");
-        }
-    }
-    printf(")\n");
-    
-
-    // Recursively print all children
-    for (int i = 0; i < tree->children_count; i++) {
-        tree_print_tree(tree->children[i], depth + 1);
-    }
-}*/
 
 void tree_print_tree(const tree_node_t *node, const char *prefix, int is_last) {
     if (!node) return;
