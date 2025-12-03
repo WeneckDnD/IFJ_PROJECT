@@ -39,7 +39,7 @@ tree_node_t *rule_expression_1(tree_node_t *node, int min_precedence, Syntactic 
 tree_node_t *rule_parse_primary(Syntactic *syntactic, Lexer *lexer);
 tree_node_t *rule_predicate(Syntactic *syntactic, Lexer *lexer);
 
-int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer, tree_node_t *node);
+int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer);
 int rule_assignment(Syntactic *syntactic, Lexer *lexer, tree_node_t *node);
 int rule_assignment(Syntactic *syntactic, Lexer *lexer, tree_node_t *node);
 int rule_function_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node);

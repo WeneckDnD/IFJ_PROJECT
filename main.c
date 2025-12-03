@@ -23,6 +23,7 @@ int main() {
     lexer_start(lexer);
 
     if(lexer->error != 0){
+        printf("lexer: %i\n", lexer->error);
         return lexer->error;
     }
     
@@ -32,7 +33,6 @@ int main() {
 
     int main_declared = check_main_function(syntactic->symtable);
     if(main_declared != 0){
-        //printf("Main not declared, code: %i\n", main_declared);
         return main_declared;
     }
 
@@ -61,9 +61,6 @@ int main() {
     
     generator_free(generator);
     // added ------------ Code generator ------------ //
-
-
-
 
     /*      EXPRESSION TEST
     tree_node_t *t = rule_expression(syntactic, lexer);

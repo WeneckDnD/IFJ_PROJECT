@@ -224,7 +224,7 @@ int lexer_start(Lexer *lexer){
 
 // FSM STATES
 
-int final_state_end_of_line(Lexer *lexer){
+void final_state_end_of_line(Lexer *lexer){
     lexer->current_row++;
     lexer->current_col = 1;
     Token *token = create_token(TOKEN_T_EOL, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
@@ -234,20 +234,20 @@ int final_state_end_of_line(Lexer *lexer){
 
 }
 
-int final_state_comma(Lexer *lexer){
+void final_state_comma(Lexer *lexer){
     Token *token = create_token(TOKEN_T_COMMA, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer_start(lexer);
 }
 
-int final_state_brackets(Lexer *lexer){
+void final_state_brackets(Lexer *lexer){
     Token *token = create_token(TOKEN_T_BRACKET, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer_start(lexer);
 }
 
 
-int final_state_identif(Lexer *lexer){
+void final_state_identif(Lexer *lexer){
     Token *token = create_token(TOKEN_T_IDENTIFIER, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     Symbol *symbol = search_table(token, lexer->symtable);
     if(symbol == NULL){
@@ -262,13 +262,13 @@ int final_state_identif(Lexer *lexer){
     lexer_start(lexer);
 }
 
-int final_state_keyword(Lexer *lexer){
+void final_state_keyword(Lexer *lexer){
     Token *token = create_token(TOKEN_T_KEYWORD, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer_start(lexer);
 }
 
-int state_id_start(Lexer *lexer){
+void state_id_start(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
     if(
@@ -284,7 +284,7 @@ int state_id_start(Lexer *lexer){
     }
 }
 
-int state_id_read(Lexer *lexer){
+void state_id_read(Lexer *lexer){
     int not_id = 0;
     for(int i = 0; i < 15; i++){
         if(strcmp(lexer->lexeme, keyword_array[i]) == 0){
@@ -302,7 +302,7 @@ int state_id_read(Lexer *lexer){
     }
 }
 
-int final_state_global_identif(Lexer *lexer){
+void final_state_global_identif(Lexer *lexer){
     Token *token = create_token(TOKEN_T_GLOBAL_VAR, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     Symbol *symbol = search_table(token, lexer->symtable);
     if (symbol == NULL){
@@ -358,7 +358,7 @@ int state_global3(Lexer *lexer){
     return lexer->error;
 }
 
-int final_state_number(Lexer *lexer){
+void final_state_number(Lexer *lexer){
     Token *token = create_token(TOKEN_T_NUM, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer_start(lexer);
@@ -488,7 +488,7 @@ int state_exponent(Lexer *lexer){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int final_state_string(Lexer *lexer){
+void final_state_string(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
 
@@ -647,7 +647,7 @@ int state_multiline_string_hex_number(Lexer *lexer){
 
 
 
-int final_state_comment(Lexer *lexer){
+void final_state_comment(Lexer *lexer){
     Token *token = create_token(TOKEN_T_EOL, "\n", 1, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer->current_row++;
@@ -676,15 +676,12 @@ int state_comment_start(Lexer *lexer){
 
 int state_comment_reading(Lexer *lexer){
     read_next_char(lexer);
-    if(lexer->current_char > 31 || (lexer->current_char != '\n' && isspace(lexer->current_char))){
-        state_comment_reading(lexer);
-    } 
-    else if(lexer->current_char == '\n'){
+    if(lexer->current_char == '\n'){
         final_state_comment(lexer);
+    }else {
+        state_comment_reading(lexer);
     }
-    else {
-        lexer->error = 1;
-    }
+
     return lexer->error;
 }
 
@@ -713,7 +710,7 @@ int state_multiline_comment_reading(Lexer *lexer){
     return lexer->error;
 }
 
-int state_reading_comment_start_sequence(Lexer *lexer){
+void state_reading_comment_start_sequence(Lexer *lexer){
     read_next_char(lexer);
     if(lexer->current_char == '*'){
         lexer->left_multiline_comment_start_sequence++;
@@ -722,7 +719,7 @@ int state_reading_comment_start_sequence(Lexer *lexer){
     state_multiline_comment_reading(lexer);
 }
 
-int state_reading_comment_end_sequence(Lexer *lexer){
+void state_reading_comment_end_sequence(Lexer *lexer){
     read_next_char(lexer);
     if(lexer->current_char == '/'){
         lexer->left_multiline_comment_end_sequence++;
@@ -732,13 +729,13 @@ int state_reading_comment_end_sequence(Lexer *lexer){
 }
 
 
-int final_state_operator(Lexer *lexer){
+void final_state_operator(Lexer *lexer){
     Token *token = create_token(TOKEN_T_OPERATOR, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer_start(lexer);
 }
 
-int state_two_char_operator(Lexer *lexer){
+void state_two_char_operator(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
     if(lexer->current_char == '='){

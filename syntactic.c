@@ -394,7 +394,7 @@ int rule_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
     return syntactic->error;
 }
 
-int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
+int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer) {
     Token *current_token = get_next_token(lexer);
 
     if (strcmp(current_token->token_lexeme, ",") != 0 && current_token->token_type != TOKEN_T_OPERATOR) {
@@ -704,7 +704,7 @@ int rule_function_call(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
             return syntactic->error;
         }
     } else if (strcmp(current_token->token_lexeme, "Ifj") == 0){
-        rule_allowed_eol(syntactic, lexer, rule_function_call_node);
+        rule_allowed_eol(syntactic, lexer);
 
         if(syntactic->error != 0) return syntactic->error;
 
@@ -790,7 +790,7 @@ int rule_function_parameters_prime(Syntactic *syntactic, Lexer *lexer, tree_node
         return syntactic->error;
     }
 
-    rule_allowed_eol(syntactic, lexer, rule_function_params_prime_node);
+    rule_allowed_eol(syntactic, lexer);
 
     // uz je v allowed_eol vynutena ciarka
 

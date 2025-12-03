@@ -42,23 +42,21 @@ void print_token_table(Lexer *lexer);
 Token *get_next_token(Lexer *lexer);
 Token *get_lookahead_token(Lexer *lexer);
 
+void final_state_end_of_line(Lexer *lexer);
+void final_state_comma(Lexer *lexer);
+void final_state_brackets(Lexer *lexer);
 
-int final_state_end_of_line(Lexer *lexer);
-int final_state_comma(Lexer *lexer);
-int final_state_brackets(Lexer *lexer);
+void final_state_identif(Lexer *lexer);
+void final_state_keyword(Lexer *lexer);
+void state_id_start(Lexer *lexer);
+void state_id_read(Lexer *lexer);
 
-
-int final_state_identif(Lexer *lexer);
-int final_state_keyword(Lexer *lexer);
-int state_id_start(Lexer *lexer);
-int state_id_read(Lexer *lexer);
-
-int final_state_global_identif(Lexer *lexer);
+void final_state_global_identif(Lexer *lexer);
 int state_global1(Lexer *lexer);
 int state_global2(Lexer *lexer);
 int state_global3(Lexer *lexer);
 
-int final_state_number(Lexer *lexer);
+void final_state_number(Lexer *lexer);
 int state_zero(Lexer *lexer);
 int state_digit(Lexer *lexer);
 int state_hex_prefix(Lexer *lexer);
@@ -68,9 +66,7 @@ int state_decimal_part(Lexer *lexer);
 int state_exponent_prefix(Lexer *lexer);
 int state_exponent(Lexer *lexer);
 
-
-
-int final_state_string(Lexer *lexer);
+void final_state_string(Lexer *lexer);
 int state_string_reading(Lexer *lexer);
 int state_special_symbol(Lexer *lexer);
 int state_string_hex_prefix(Lexer *lexer);
@@ -82,23 +78,19 @@ int state_multiline_special_symbol(Lexer *lexer);
 int state_multiline_string_hex_prefix(Lexer *lexer);
 int state_multiline_string_hex_number(Lexer *lexer);
 
-
-
-int final_state_comment(Lexer *lexer);
+void final_state_comment(Lexer *lexer);
 int state_comment_start(Lexer *lexer);
 int state_comment_reading(Lexer *lexer);
 int state_multiline_comment_reading(Lexer *lexer);
-int state_reading_comment_start_sequence(Lexer *lexer);
-int state_reading_comment_end_sequence(Lexer *lexer);
+void state_reading_comment_start_sequence(Lexer *lexer);
+void state_reading_comment_end_sequence(Lexer *lexer);
 
 
-int final_state_operator(Lexer *lexer);
-int state_two_char_operator(Lexer *lexer);
+void final_state_operator(Lexer *lexer);
+void state_two_char_operator(Lexer *lexer);
 int state_exclamation_operator(Lexer *lexer);
 
 
 int* extend_array(int *int_arr, int number_of_elements, int value_to_add, int index);
 
 #endif
-
-
