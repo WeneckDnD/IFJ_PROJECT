@@ -44,7 +44,7 @@ Lexer *init_lexer(Symtable *symtable){
     lexer->left_multiline_comment_start_sequence = 0;
 
     return lexer;
-};
+}
 
 #include <stdlib.h>
 
@@ -88,7 +88,7 @@ void extend_lexeme(Lexer *lexer, char currect_char){
     lexer->lexeme = realloc(lexer->lexeme, sizeof(char) * lexer->lexeme_length + 1);
     lexer->lexeme[lexer->lexeme_length - 1] = currect_char;
     lexer->lexeme[lexer->lexeme_length] = '\0';
-};
+}
 
 void add_token_to_token_table(Lexer *lexer, Token *token){
     lexer->token_count++;
@@ -259,7 +259,6 @@ int final_state_identif(Lexer *lexer){
         add_symbol_occurence(symbol, lexer->current_row, lexer->current_col, lexer->scope);
     }
     add_token_to_token_table(lexer, token);
-    (lexer->symtable, symbol);
     lexer_start(lexer);
 }
 
@@ -273,9 +272,9 @@ int state_id_start(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
     if(
-        lexer->current_char >= 'a' && lexer->current_char <= 'z' ||
-        lexer->current_char >= 'A' && lexer->current_char <= 'Z' ||
-        lexer->current_char >= '0' && lexer->current_char <= '9' ||
+        (lexer->current_char >= 'a' && lexer->current_char <= 'z' )||
+        (lexer->current_char >= 'A' && lexer->current_char <= 'Z' )||
+        (lexer->current_char >= '0' && lexer->current_char <= '9' )||
         lexer->current_char == '_'
     ) {
         read_next_char(lexer);
@@ -328,9 +327,9 @@ int state_global1(Lexer *lexer){
 int state_global2(Lexer *lexer){
     read_next_char(lexer);
     if(
-        lexer->current_char >= 'a' && lexer->current_char <= 'z' ||
-        lexer->current_char >= 'A' && lexer->current_char <= 'Z' ||
-        lexer->current_char >= '0' && lexer->current_char <= '9' ||
+        (lexer->current_char >= 'a' && lexer->current_char <= 'z' )||
+        (lexer->current_char >= 'A' && lexer->current_char <= 'Z' )||
+        (lexer->current_char >= '0' && lexer->current_char <= '9' )||
         lexer->current_char == '_'
     ) {
         state_global3(lexer);
@@ -345,9 +344,9 @@ int state_global3(Lexer *lexer){
     lexer->current_char = getc(stdin);
     ungetc(lexer->current_char, stdin);
     if(
-        lexer->current_char >= 'a' && lexer->current_char <= 'z' ||
-        lexer->current_char >= 'A' && lexer->current_char <= 'Z' ||
-        lexer->current_char >= '0' && lexer->current_char <= '9' ||
+        (lexer->current_char >= 'a' && lexer->current_char <= 'z' )||
+        (lexer->current_char >= 'A' && lexer->current_char <= 'Z' )||
+        (lexer->current_char >= '0' && lexer->current_char <= '9' )||
         lexer->current_char == '_'
     ) {
         read_next_char(lexer);
@@ -363,7 +362,7 @@ int final_state_number(Lexer *lexer){
     Token *token = create_token(TOKEN_T_NUM, lexer->lexeme, lexer->lexeme_length, lexer->current_row, lexer->current_col, lexer->scope, lexer->previous_scope_arr, lexer->scope_index);
     add_token_to_token_table(lexer, token);
     lexer_start(lexer);
-};
+}
 
 int state_zero(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -385,7 +384,7 @@ int state_zero(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_digit(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -407,7 +406,7 @@ int state_digit(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_hex_prefix(Lexer *lexer){
     read_next_char(lexer);
@@ -420,7 +419,7 @@ int state_hex_prefix(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_hex_numba(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -436,7 +435,7 @@ int state_hex_numba(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_dot_arrived(Lexer *lexer){
     read_next_char(lexer);
@@ -446,7 +445,7 @@ int state_dot_arrived(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_decimal_part(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -463,7 +462,7 @@ int state_decimal_part(Lexer *lexer){
         final_state_number(lexer);
     }
     return lexer->error;
-};
+}
 
 int state_exponent_prefix(Lexer *lexer){
     read_next_char(lexer);
@@ -473,7 +472,7 @@ int state_exponent_prefix(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_exponent(Lexer *lexer){
     lexer->current_char = getc(stdin);
@@ -485,7 +484,7 @@ int state_exponent(Lexer *lexer){
         final_state_number(lexer);
     }
     return lexer->error;
-};
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -504,7 +503,7 @@ int final_state_string(Lexer *lexer){
 
         lexer_start(lexer);
     }
-};
+}
 
 int state_string_reading(Lexer *lexer){
     read_next_char(lexer);
@@ -519,7 +518,7 @@ int state_string_reading(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_special_symbol(Lexer *lexer){
     read_next_char(lexer);
@@ -531,7 +530,7 @@ int state_special_symbol(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_string_hex_prefix(Lexer *lexer){
     read_next_char(lexer);
@@ -544,7 +543,7 @@ int state_string_hex_prefix(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_string_hex_number(Lexer *lexer){
     read_next_char(lexer);
@@ -557,7 +556,7 @@ int state_string_hex_number(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_multiline_string_reading(Lexer *lexer){
     puts("state_multiline_string_reading");
@@ -581,7 +580,7 @@ int state_multiline_string_reading(Lexer *lexer){
     }
 
     return lexer->error;
-};
+}
 
 int state_multiline_string1(Lexer *lexer){
     puts("state_multiline_string1");
@@ -592,7 +591,7 @@ int state_multiline_string1(Lexer *lexer){
         lexer->error = 1;
     }
     return lexer->error;
-};
+}
 
 int state_multiline_string2(Lexer *lexer){
     puts("state_multiline_string2");
@@ -673,7 +672,7 @@ int state_comment_start(Lexer *lexer){
         final_state_operator(lexer);
     }
     return lexer->error;
-};
+}
 
 int state_comment_reading(Lexer *lexer){
     read_next_char(lexer);

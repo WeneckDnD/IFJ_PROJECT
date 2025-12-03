@@ -375,10 +375,8 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
 
         }
         tree_node_t *parent = tree_node->parent;
-        bool is_in_function = false;
         while(parent != NULL){
             if(parent->rule == GR_FUN_DECLARATION){
-                is_in_function = true;
                 break;
             }
             parent = parent->parent;
@@ -474,6 +472,7 @@ int traverse_tree(tree_node_t *tree_node, Symtable *symtable, Semantic *semantic
     if(tree_node->rule == GR_CODE_BLOCK){
         semantic->scope_counter--;
     }
+    return 0;
 }
 
 

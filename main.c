@@ -14,7 +14,7 @@
 // #include "Tree.h"
     
 
-int main(int argc, char *argv[]) {
+int main() {
     Symtable *symtable;
     symtable = init_sym_table();
 

@@ -383,8 +383,7 @@ int rule_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 
     // HOTFIX
     lexer->scope = syntactic->scope_counter;
-    Symbol *new_id_symbol = lexer_create_identifier_sym_from_token(current_token);
-    
+
     // update symbol table
     Symbol *symbol = search_table(current_token, syntactic->symtable);
     symbol->sym_identif_type = IDENTIF_T_VARIABLE;
@@ -396,9 +395,6 @@ int rule_declaration(Syntactic *syntactic, Lexer *lexer, tree_node_t *node){
 }
 
 int rule_allowed_eol(Syntactic *syntactic, Lexer *lexer, tree_node_t *node) {
-
-    tree_node_t *rule_oel_node = node;
-
     Token *current_token = get_next_token(lexer);
 
     if (strcmp(current_token->token_lexeme, ",") != 0 && current_token->token_type != TOKEN_T_OPERATOR) {
