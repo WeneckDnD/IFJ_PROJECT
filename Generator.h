@@ -16,9 +16,7 @@ typedef struct generator {
   FILE *output;           // Výstupný súbor (NULL = stdout)
   int error;              // Chybový kód
   int in_function;        // Flag či sme vnútri funkcie
-  char *variable;
   bool is_global;
-  char *string_variable;
   bool is_called;
   char**global_vars;
   int global_count;
