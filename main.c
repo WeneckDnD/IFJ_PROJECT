@@ -22,7 +22,6 @@ int main(int argc, char *argv[]) {
     Lexer *lexer = init_lexer(symtable);
     lexer_start(lexer);
 
-    //printf("LEXICAL ERR: %i\n", lexer->error);
     if(lexer->error != 0){
         return lexer->error;
     }
@@ -33,34 +32,19 @@ int main(int argc, char *argv[]) {
 
     int main_declared = check_main_function(syntactic->symtable);
     if(main_declared != 0){
-        printf("Main not declared, code: %i\n", main_declared);
+        //printf("Main not declared, code: %i\n", main_declared);
         return main_declared;
     }
-    /*int scope_arr[] = {100,101};
-    Token *token = create_token(TOKEN_T_IDENTIFIER, "main",4,0,0,100,scope_arr,2);
-    Symbol *symbol = is_(token, symtable );
-    if (symbol == NULL) {
-        return 3;
-    }*/
 
-    //printf("SYNTACTIC ERR: %i\n", syntactic->error);
     if(syntactic->error != 0){
          return syntactic->error;
     }
 
     Semantic *semantic = init_semantic(syntactic->symtable);
     traverse_tree(syntactic->tree->children[0], syntactic->symtable, semantic);
-    // print_symtable(symtable);
-
-    // tree_print_tree(syntactic->tree->children[0], "", 0);
-    // printf("Sem err: %i\n", semantic->error);
     if(semantic->error != 0){
          return semantic->error;
     } 
-
-    // puts("\n============================================================\n");
-
-    //print_symtable_lexemes(symtable);
 
     // added ------------ Code generator ------------ //
     Generator *generator = init_generator(symtable);

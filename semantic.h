@@ -7,7 +7,6 @@
 typedef struct semantic {
     int error;
     int scope_counter;
-    // tree_node_t *tree;
     Symtable *symtable;
 } Semantic;
 
