@@ -512,3 +512,34 @@ bool multiple_declaration_valid(Symbol *symbol){
     }
     return true;
 }
+
+// Add this to semantic.c or syntactic.c
+
+int check_main_function(Symtable *symtable) {
+    // Search through the entire symbol table for 'main'
+    for (int i = 0; i < symtable->symtable_size; i++) {
+        Symbol *sym = symtable->symtable_rows[i].symbol;
+        if (!sym || !sym->sym_lexeme) continue;
+
+        // Check if this is 'main'
+        if (strcmp(sym->sym_lexeme, "main") == 0) {
+            // Check if it's a function
+            if (sym->sym_identif_type != IDENTIF_T_FUNCTION) {
+                continue; // 'main' exists but isn't a function
+            }
+
+            // Check if any declaration has 0 parameters
+            for (int j = 0; j < sym->sym_identif_declaration_count; j++) {
+                if (sym->sym_function_number_of_params[j] == 0) {
+                    return 0; // Found main() with 0 parameters
+                }
+            }
+            
+            // 'main' exists as a function but not with 0 parameters
+            return 3; // Semantic error - main() not found
+        }
+    }
+
+    // 'main' not found at all
+    return 3; // Semantic error - undefined function
+}

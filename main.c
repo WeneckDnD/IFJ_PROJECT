@@ -31,6 +31,11 @@ int main(int argc, char *argv[]) {
     Syntactic *syntactic = init_syntactic(symtable);
     syntactic_start(syntactic, lexer);
 
+    int main_declared = check_main_function(syntactic->symtable);
+    if(main_declared != 0){
+        printf("Main not declared, code: %i\n", main_declared);
+        return main_declared;
+    }
     /*int scope_arr[] = {100,101};
     Token *token = create_token(TOKEN_T_IDENTIFIER, "main",4,0,0,100,scope_arr,2);
     Symbol *symbol = is_(token, symtable );
